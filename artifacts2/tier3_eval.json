@@ -1,0 +1,8 @@
+{
+  "n_clusters": 1079,
+  "n_tracklets": 1079,
+  "n_gt_identities": 98,
+  "purity": 1.0,
+  "nmi": 0.7513,
+  "ari": 0.0
+}

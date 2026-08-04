@@ -1,0 +1,128 @@
+{
+  "global champion+TTA": {
+    "plain": {
+      "mAP": 0.4252,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7178,
+      "rank-5": 0.8773,
+      "rank-10": 0.9325
+    },
+    "st": {
+      "mAP": 0.4267,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7117,
+      "rank-5": 0.8896,
+      "rank-10": 0.9325
+    }
+  },
+  "part soft": {
+    "plain": {
+      "mAP": 0.1317,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.2025,
+      "rank-5": 0.681,
+      "rank-10": 0.7546
+    },
+    "st": {
+      "mAP": 0.1323,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.2025,
+      "rank-5": 0.6687,
+      "rank-10": 0.7485
+    }
+  },
+  "part aligned": {
+    "plain": {
+      "mAP": 0.1181,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.1902,
+      "rank-5": 0.6135,
+      "rank-10": 0.7301
+    },
+    "st": {
+      "mAP": 0.1187,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.1902,
+      "rank-5": 0.6012,
+      "rank-10": 0.7301
+    }
+  },
+  "part soft+TTA": {
+    "plain": {
+      "mAP": 0.1458,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.2577,
+      "rank-5": 0.6319,
+      "rank-10": 0.7546
+    },
+    "st": {
+      "mAP": 0.147,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.2577,
+      "rank-5": 0.638,
+      "rank-10": 0.7607
+    }
+  },
+  "RRF(global+TTA, part-soft)": {
+    "plain": {
+      "mAP": 0.2866,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.4785,
+      "rank-5": 0.8098,
+      "rank-10": 0.8957
+    },
+    "st": {
+      "mAP": 0.2885,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.4785,
+      "rank-5": 0.816,
+      "rank-10": 0.8957
+    }
+  },
+  "RRF(global+TTA x2, part-soft)": {
+    "plain": {
+      "mAP": 0.341,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.5644,
+      "rank-5": 0.8712,
+      "rank-10": 0.9141
+    },
+    "st": {
+      "mAP": 0.3431,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.5706,
+      "rank-5": 0.8773,
+      "rank-10": 0.9202
+    }
+  },
+  "RRF(global+TTA, part-soft, part-al)": {
+    "plain": {
+      "mAP": 0.238,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.4049,
+      "rank-5": 0.7791,
+      "rank-10": 0.8712
+    },
+    "st": {
+      "mAP": 0.2391,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.4049,
+      "rank-5": 0.7914,
+      "rank-10": 0.8712
+    }
+  }
+}

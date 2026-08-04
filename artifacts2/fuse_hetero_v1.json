@@ -1,0 +1,135 @@
+{
+  "dino6 (zero-human ref)": {
+    "P1": {
+      "mAP": 0.5895,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.8834,
+      "rank-5": 0.9693,
+      "rank-10": 0.9693
+    },
+    "dorsal": 0.5499999999999999,
+    "P2": {
+      "mAP": 0.3556,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.5578,
+      "rank-5": 0.7094,
+      "rank-10": 0.7837
+    }
+  },
+  "mega3": {
+    "P1": {
+      "mAP": 0.4753,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7178,
+      "rank-5": 0.9018,
+      "rank-10": 0.9387
+    },
+    "dorsal": 0.5561333333333334,
+    "P2": {
+      "mAP": 0.3209,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.509,
+      "rank-5": 0.7084,
+      "rank-10": 0.7858
+    }
+  },
+  "dino6+mega3": {
+    "P1": {
+      "mAP": 0.6334,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.9264,
+      "rank-5": 0.9632,
+      "rank-10": 0.9755
+    },
+    "dorsal": 0.6123000000000001,
+    "P2": {
+      "mAP": 0.3921,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.6161,
+      "rank-5": 0.772,
+      "rank-10": 0.8261
+    }
+  },
+  "dino6+mega3 (mega x2)": {
+    "P1": {
+      "mAP": 0.6285,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.9141,
+      "rank-5": 0.9632,
+      "rank-10": 0.9755
+    },
+    "dorsal": 0.6254333333333334,
+    "P2": {
+      "mAP": 0.3958,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.6108,
+      "rank-5": 0.7847,
+      "rank-10": 0.8324
+    }
+  },
+  "dino6+mega3+act(clicks)": {
+    "P1": {
+      "mAP": 0.6308,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.9264,
+      "rank-5": 0.9693,
+      "rank-10": 0.9755
+    },
+    "dorsal": 0.61565,
+    "P2": {
+      "mAP": 0.3882,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.6098,
+      "rank-5": 0.7688,
+      "rank-10": 0.8208
+    }
+  },
+  "dino6+mega3 +clust": {
+    "P1": {
+      "mAP": 0.6305,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.9264,
+      "rank-5": 0.9632,
+      "rank-10": 0.9755
+    },
+    "dorsal": 0.5956833333333335,
+    "P2": {
+      "mAP": 0.3899,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.6267,
+      "rank-5": 0.7614,
+      "rank-10": 0.8123
+    }
+  },
+  "dino6+mega3+act(clicks) +clust": {
+    "P1": {
+      "mAP": 0.6247,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.9264,
+      "rank-5": 0.9693,
+      "rank-10": 0.9755
+    },
+    "dorsal": 0.6021666666666666,
+    "P2": {
+      "mAP": 0.389,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.6246,
+      "rank-5": 0.7603,
+      "rank-10": 0.8081
+    }
+  }
+}

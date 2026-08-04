@@ -1,0 +1,116 @@
+{
+  "mega2_60 (single)": {
+    "P1": {
+      "mAP": 0.582,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.8712,
+      "rank-5": 0.9509,
+      "rank-10": 0.9509
+    },
+    "dorsal": 0.59265,
+    "P2": {
+      "mAP": 0.3661,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.5578,
+      "rank-5": 0.7561,
+      "rank-10": 0.8102
+    }
+  },
+  "dino6 + mega2_60": {
+    "P1": {
+      "mAP": 0.6103,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.8957,
+      "rank-5": 0.9693,
+      "rank-10": 0.9816
+    },
+    "dorsal": 0.5757333333333333,
+    "P2": {
+      "mAP": 0.3748,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.5779,
+      "rank-5": 0.7296,
+      "rank-10": 0.8017
+    }
+  },
+  "dino6 + mega3 + mega2_60": {
+    "P1": {
+      "mAP": 0.6418,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.9264,
+      "rank-5": 0.9632,
+      "rank-10": 0.9755
+    },
+    "dorsal": 0.6119,
+    "P2": {
+      "mAP": 0.4007,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.6204,
+      "rank-5": 0.7688,
+      "rank-10": 0.8293
+    }
+  },
+  "best4 + mega2_60": {
+    "P1": {
+      "mAP": 0.6245,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.865,
+      "rank-5": 0.9693,
+      "rank-10": 0.9816
+    },
+    "dorsal": 0.6307666666666667,
+    "P2": {
+      "mAP": 0.4082,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.6225,
+      "rank-5": 0.7805,
+      "rank-10": 0.8399
+    }
+  },
+  "hc16+hc18+mega2_60+megaft50": {
+    "P1": {
+      "mAP": 0.6353,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.8834,
+      "rank-5": 0.9693,
+      "rank-10": 0.9816
+    },
+    "dorsal": 0.6239,
+    "P2": {
+      "mAP": 0.4127,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.6267,
+      "rank-5": 0.7826,
+      "rank-10": 0.8324
+    }
+  },
+  "dep+hc + mega2_60 + megaft50": {
+    "P1": {
+      "mAP": 0.6262,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.9141,
+      "rank-5": 0.9755,
+      "rank-10": 0.9816
+    },
+    "dorsal": 0.5982500000000001,
+    "P2": {
+      "mAP": 0.3887,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.5992,
+      "rank-5": 0.7593,
+      "rank-10": 0.8091
+    }
+  }
+}

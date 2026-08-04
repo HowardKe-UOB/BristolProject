@@ -1,0 +1,38 @@
+{
+  "no TTA (champion)": {
+    "plain": {
+      "mAP": 0.4227,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7055,
+      "rank-5": 0.865,
+      "rank-10": 0.9141
+    },
+    "st": {
+      "mAP": 0.4247,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.6994,
+      "rank-5": 0.8712,
+      "rank-10": 0.9202
+    }
+  },
+  "flip TTA (champion)": {
+    "plain": {
+      "mAP": 0.4252,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7178,
+      "rank-5": 0.8773,
+      "rank-10": 0.9325
+    },
+    "st": {
+      "mAP": 0.4266,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7117,
+      "rank-5": 0.8896,
+      "rank-10": 0.9325
+    }
+  }
+}

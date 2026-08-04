@@ -1,0 +1,103 @@
+# stage4-mega
+
+## MegaBackbone: model and construction  [vitb_unsup_mega.py:35-59]
+MegaBackbone wraps timm.create_model('hf-hub:BVRA/MegaDescriptor-L-384', pretrained=True, num_classes=0) — MegaDescriptor-L-384, a Swin-L animal-ReID foundation model. Feature dim self.embed_dim = model.num_features = 1536 (verified: all Mega sweep npz are (997,1536)). ALL parameters are first frozen (requires_grad_(False)); then the last n_stage elements of self.model.layers (the Swin stages) are unfrozen, plus self.model.norm (the final LayerNorm). forward(x) returns the pooled 1536-d feature (num_classes=0 head).
+
+## MegaBackbone: n_stage semantics  [vitb_unsup_mega.py:43-55,85]
+n_stage counts UNFROZEN trailing Swin stages: n_stage=1 unfreezes only the last stage (stage 4 of Swin-L) + final norm; n_stage=2 unfreezes the last TWO stages (stages 3 and 4, i.e. including Swin-L's 18-block third stage — the bulk of the network's compute) + final norm. Implemented as `for st in list(self.model.layers)[-n_stage:]`. Default --n-stage 1.
+
+## n_stage=2 batch size P (from launch flags, NOT code default)  [vitb_unsup_mega.py:81 (default P=10); project memory cow-reid-project.md (P=6 for n_stage=2 runs)]
+The script's default is --P 10; the n_stage=2 student runs (mega2 s60/61/62, mega2ft s80-82, sup2 s90-92, r3 s100-102) were launched with --P 6 to fit memory/time (~0.45 s/step, ~8 min/1000 steps). P=6 appears only in the project log/memory, not in any script default — cite it as a run-time flag.
+
+## Input resolution pipeline  [vitb_unsup_mega.py:36,65-72; vitb_unsup.py:41,69-96]
+Frames come from a disk uint8 cache of 518x518 crops (IMG=518 in vitb_unsup.py). CacheLoader normalizes on GPU with ImageNet mean/std ([0.485,0.456,0.406]/[0.229,0.224,0.225]). MegaStudent._frames then resizes 518->384 ON THE FLY with F.interpolate(mode='bilinear', align_corners=False) — i.e. resize happens AFTER normalization, inside the forward pass, whenever spatial size != 384. Clips are (B,T,3,518,518) flattened to (B*T,3,H,W) before the backbone, reshaped back to (B,T,1536).
+
+## MegaStudent head (inherited FineTuneIICS -> MultiBranchReID)  [vitb_unsup_mega.py:65-72,176; train_finetune_iics.py:35-53; cowreid/iics.py:34-79; cowreid/encoder.py:55-70]
+MegaStudent subclasses FineTuneIICS, overriding only _frames (the 384 resize). Head = MultiBranchReID(in_dim=1536, n_classes_per_cam, proj_dim=256): (1) TemporalPool(1536,'attn') pools T frame features: w_t = softmax_t(Linear(1536->1)(f_t)), pooled = sum_t w_t * f_t; (2) projection embed = Linear(1536->256) -> AIBN1d(256) -> ReLU(inplace); (3) model.embed(clips) = F.normalize(embed(pool(frames)), dim=1) — the training embedding is 256-d and L2-normalized. AIBN1d = gamma*(alpha*BN(x) + (1-alpha)*InstanceStd(x)) + beta with alpha a learnable scalar clamped to [0,1], BN affine=False, instance standardisation per-sample across the 256 dims; BN branch is bypassed (bn=x) when batch size is 1.
+
+## Per-camera cosine classifier  [cowreid/iics.py:64-75; vitb_unsup_mega.py:176,215]
+One classifier per camera: nn.Linear(256, k_c, bias=False) where k_c = number of intra-camera clusters (or GT ids under --supervised) in camera c. logits(emb, cam) = 16.0 * emb @ normalize(W_cam, dim=1)^T — a cosine classifier with fixed scale s=16. Camera ids are sanitised ('.'->'_') for the ModuleDict keys.
+
+## Algorithmic flow of vitb_unsup_mega.py (Stage-4 student training)  [vitb_unsup_mega.py:98-260; cowreid/cluster.py:46-91; consensus_ens.py:42-55]
+Deployment mode over ALL 7 cameras, 997 tracklets (g_tids = teacher npz ids order). Labels are mined ONCE from the teacher space before training and FROZEN (no refresh loop): (a) intra-camera pseudo-labels per camera via ClusterAssigner(sim_threshold=0.7, k=10).assign on teacher embeddings with same-camera cannot-links (mutual-kNN graph, edges need cosine>=0.7 and mutuality within top-10, constrained union-find); (b) cross-camera proxy links via mutual_knn_links(X_teacher, cams, k=2): S=X@X^T with self and same-camera entries set to -2, links = mutual top-k pairs, per-link confidence = teacher cosine Xn[a]@Xn[b]. Each intra cluster = one proxy; global proxy index = per-camera offset + local label; n_proxy = total. Proxy bank initialised from the STUDENT's own initial embeddings: P0[j] = normalize(mean of embed_tids embeddings of proxy j's member tracklets) — NOT from the teacher. Training alternates two step types for target=1000 steps under a wall clock (--wall 300 s) with checkpoint resume (model+opt+step saved each chunk).
+
+## Loss, even steps (intra-camera CE)  [vitb_unsup_mega.py:204-216; cowreid/iics.py:73-75; vitb_unsup.py:84-92]
+Pick one camera c uniformly at random; sample min(P=10, #clusters) intra clusters without replacement; from each, K=4 tracklets (with replacement if the cluster has <4); T=2 random frames each (frame indices drawn WITH replacement, rng.integers). Loss = CrossEntropy( 16*<e_i, w_hat_y> over camera c's classes , y_i ) where e_i is the 256-d normalized embedding and w_hat the L2-normalized classifier rows. LaTeX: L_intra = -(1/B) sum_i log[ exp(s*cos(e_i,w_{y_i})) / sum_k exp(s*cos(e_i,w_k)) ], s=16, softmax over camera c's k_c classes only.
+
+## Loss, odd steps (proxy contrastive + confidence-weighted link loss)  [vitb_unsup_mega.py:217-248]
+Batch of P=10 proxies = min(P//2, |linked|)=5 sampled uniformly (no replacement) from proxies that HAVE links + 5 uniform from all n_proxy; K=4 member tracklets per proxy. Compute sim = e_i . proxies^T / tau, tau=0.07 (proxy bank .clone()d before the matmul so backward works). For item i whose own proxy p lives in camera c, with sc = indices of same-camera proxies and dc = different-camera proxies: (1) intra-proxy CE over SAME-camera columns only: l_i = -log[ exp(sim[i,p]) / sum_{q in sc} exp(sim[i,q]) ]; (2) if p has links: den = logsumexp_{q in dc} sim[i,q]; l_link = sum_{(o,conf) in links(p)} conf * ( den - sim[i,o] ) / sum conf, i.e. a confidence-weighted average of -log[ exp(sim[i,o]) / sum_{q in dc} exp(sim[i,q]) ] over linked cross-camera proxies o; l_i += w_link * l_link with w_link=1.0. Final loss = mean over the batch's items. Under --supervised all conf=1.0; unsupervised conf = teacher cosine of the mined pair.
+
+## Proxy memory update  [vitb_unsup_mega.py:89,249-252]
+After each odd step, under no_grad, for each batch item (f = its detached fp32 embedding, p = its proxy): proxies[p] <- F.normalize( momentum * proxies[p] + (1 - momentum) * f ), momentum=0.2. NOTE the coefficient on the OLD proxy is 0.2, so each update moves the proxy 80% toward the new embedding — a fast-moving bank, not a slow EMA. Items sharing a proxy update it sequentially (K=4 times per sampled proxy).
+
+## Optimizer / precision  [vitb_unsup_mega.py:177-180,214,228-231,253]
+AdamW with two param groups: backbone trainable params lr=1e-5, head params lr=3e-4; weight_decay=1e-4 for both. Mixed precision: torch.autocast('cuda', float16) for forwards + GradScaler; the odd-step link loss is computed in fp32 (embf = emb.float()) outside autocast.
+
+## --teacher-npz consumption mechanics  [vitb_unsup_mega.py:37,92,109-114,133,154-160]
+Default _vitb_dst_emb_v4.npz. d=np.load(npz); ids := d['ids'] defines the tracklet universe AND row order (g_tids = list(ids), all 7 cameras, 997). Key selection: tkeys = sorted keys != 'ids' that either contain any of the SUBSTRINGS 's7','s8','s9' (constant K2) or equal exactly 't0'. Xt = np.mean over the selected arrays, then row L2-normalized. Consequences: with the default dst npz (keys _vitb_dst_s5.._s9_ckpt, each 997x768) only the k=2 trio s7/s8/s9 is averaged (s5/s6 silently excluded); with a fused/super teacher npz the single 't0' matrix is used (mean is a no-op). Xt is used ONLY for label mining (intra clustering + mutual-kNN links + link confidences); the student never regresses onto teacher vectors, and dimensions never need to match the student (Xt can be 768-, 2304- or 3840-d while the student is 256-d).
+
+## Fused teacher construction (make_fused_teacher.py)  [make_fused_teacher.py:15-33; verified shapes by loading npz]
+Xd = row-normalize( mean of the DINOv2-student arrays in _vitb_dst_emb_v4.npz whose key contains 's7','s8' or 's9' ) — the three 768-d k=2 distilled ViT-B students. Xm = row-normalize( mean of the three 1536-d n_stage=1 Mega-student arrays in _sweep_mega_trio_emb.npz, rows REORDERED to the DINOv2 ids order via mids.index(t) ). Xcat = concat([sqrt(0.4)*Xd, sqrt(0.6)*Xm], axis=1) -> 768+1536 = 2304-d, then row-normalized once more. Because each part is unit-norm and 0.4+0.6=1, each concatenated row already has norm exactly 1, so the final normalization is a numerical no-op and <Xcat_i, Xcat_j> = 0.4*cos_DINOv2(i,j) + 0.6*cos_Mega(i,j) EXACTLY. Saved as _fused_teacher_emb.npz with keys ids and t0 (997x2304, verified).
+
+## Super teacher v1 (make_super_teacher.py)  [make_super_teacher.py:21-75; verified shapes by loading npz]
+SRC = [(_sweep_mega2ft_trio_emb.npz, key-indices [0,1,2], w=0.45), (_sweep_mega2_trio_emb.npz, [0,1,2], w=0.35), (_sweep_final_zerohuman_emb.npz, [3,4,5] = hc16/17/18, w=0.20)]. For each source: trio = mean of the 3 selected arrays (keys taken positionally from d.files minus 'ids'), row-normalized, scaled by sqrt(w). Concatenate all parts -> 1536+1536+768 = 3840-d (verified: _super_teacher_emb.npz t0 is (997,3840)), then row-normalize (exact no-op since 0.45+0.35+0.20=1). Inner product = 0.45*cos_mega2ft + 0.35*cos_mega2 + 0.20*cos_hc. Saved key t0. ids are taken from the FIRST npz (mega2ft) and the other npz rows are NOT reordered (assumes identical tracklet order across sweep npz files). Then a link-precision diagnostic: mutual_knn_from_sim(S=Xcat@Xcat^T, cams, k=2) (same-camera and diagonal set to -2; accept mutual top-2 pairs with S>-1, i<j); overall and 'dorsal' precision (both endpoints' camera != OBL='66.130') vs GT; printed refs: DINOv2 teacher dorsal-prec 0.514, fused(0.4/0.6) 0.616, Mega 0.621.
+
+## Super teacher v2 differences (make_super_teacher2.py)  [make_super_teacher2.py:15-53; verified shapes by loading npz]
+Identical construction (imports mutual_knn_from_sim from make_super_teacher). Only differences: SRC = [(_sweep_sup2_trio_emb.npz, [0,1,2], w=0.45), (_sweep_mega2ft_trio_emb.npz, [0,1,2], w=0.30), (_sweep_final_zerohuman_emb.npz, [3,4,5], w=0.25)] — i.e. the rung-2 students (sup2 trio, trained on super-teacher v1) replace the mega2 trio and take the top weight; mega2ft drops 0.45->0.30, hc rises 0.20->0.25. Output _super_teacher2_emb.npz, key t0, also 3840-d = 1536+1536+768 (verified (997,3840)). Printed ref: super-v1 dorsal 0.649.
+
+## --supervised flag: exact changes  [vitb_unsup_mega.py:93-94,128-152]
+Two and only two things change. (1) Intra-camera labels: per camera, label = index of the tracklet's GT identity among the sorted unique GT ids present in that camera (gids=sorted set; lab[t]=gm[gt[t]]), replacing ClusterAssigner teacher-space clustering — so proxies become one per (camera, GT-identity-present-in-that-camera) and k_c = #unique GT ids in camera c. (2) Cross-camera links: for each GT identity, collect the set of its global proxy indices (one per camera it appears in) and add ALL unordered pairs among them, each with confidence 1.0, symmetrically into plinks — replacing teacher-space mutual-kNN links with cosine confidences. Since an identity has exactly one proxy per camera, every supervised link is cross-camera by construction. EVERYTHING else is byte-identical: same alternating losses, P/K/T, tau=0.07, momentum=0.2, w_link=1.0, optimizer, 1000 steps — the 'fair supervised baseline'. The teacher npz is still loaded (and defines g_tids order) but its embeddings are never used in this mode.
+
+## Cannot-links and tracklet construction  [vitb_unsup_mega.py:99-102,121,133]
+Tracklets built with max_gap_s=2; topology CameraTopology.from_gt(manifest); cannot-link set cl = build_cannot_link(tracklets, topo, 0.02). Only the SAME-camera subset cl_same (pairs whose two tracklets share a camera) is used, and only inside the unsupervised intra-camera ClusterAssigner call; the full cross-camera cannot-link set is not used elsewhere in this script.
+
+## embed_tids / eval-side frame sampling  [vitb_unsup.py:84-111; vitb_unsup_mega.py:78,195]
+embed_tids: eval-mode, batches of 16 tracklets, autocast fp16, T frames per tracklet chosen deterministically as np.linspace(0, n-1, T) (evenly spaced, padded by repeating the last index if the tracklet has <T cached frames); train-mode batches instead draw T frame indices uniformly WITH replacement. Each tracklet has frames=8 cached frame paths.
+
+## Checkpoint chunking  [vitb_unsup_mega.py:79-80,184-193,203,258-260]
+Training runs in wall-clock chunks: loop `while step < target and (time-t0) < wall` with --wall default 300 s and --target 1000 steps; at chunk end saves {model, opt, step} to --ckpt and on restart resumes model+optimizer+step (optimizer load failure tolerated). Loading uses the same file, so a full run is several invocations of the script.
+
+## HYPERPARAMS
+- Backbone model id = hf-hub:BVRA/MegaDescriptor-L-384 (Swin-L, num_features=1536, timm, num_classes=0)   (vitb_unsup_mega.py:35,45-46)
+- Input size (backbone) = 384x384 (bilinear on-the-fly resize from 518x518 cached crops, ImageNet norm applied before resize)   (vitb_unsup_mega.py:36,69-71; vitb_unsup.py:41,76-82)
+- --n-stage default = 1 (unfreeze last Swin stage + final norm); n_stage=2 additionally unfreezes stage 3   (vitb_unsup_mega.py:85,49-55)
+- --P (proxies/clusters per step) = 10 (default); n_stage=2 runs launched with --P 6 (from project log, not code)   (vitb_unsup_mega.py:81; memory cow-reid-project.md)
+- --K (tracklets per cluster/proxy) = 4   (vitb_unsup_mega.py:82)
+- --T (frames per tracklet per batch) = 2   (vitb_unsup_mega.py:83)
+- --frames (cached frames per tracklet) = 8   (vitb_unsup_mega.py:78)
+- --proj-dim (student embedding dim) = 256 (L2-normalized; Linear 1536->256 + AIBN1d + ReLU after attention temporal pool)   (vitb_unsup_mega.py:84,176; cowreid/iics.py:61-71)
+- Cosine-classifier scale s = 16.0   (cowreid/iics.py:73-75)
+- --temp (proxy softmax temperature tau) = 0.07   (vitb_unsup_mega.py:88,231)
+- --momentum (proxy bank) = 0.2 = weight on OLD proxy; update p <- normalize(0.2*p + 0.8*f)   (vitb_unsup_mega.py:89,249-252)
+- --w-link (link-loss weight) = 1.0   (vitb_unsup_mega.py:87,246)
+- --link-k (mutual-kNN link k) = 2   (vitb_unsup_mega.py:86,155)
+- Linked proxies per odd step = min(P//2, |linked_pool|) = 5 linked + (P-5) random proxies   (vitb_unsup_mega.py:218-221)
+- Intra-camera ClusterAssigner = sim_threshold=0.7, k=10 (mutual-kNN + constrained union-find, same-camera cannot-links)   (vitb_unsup_mega.py:133; cowreid/cluster.py:46-91)
+- Cannot-link overlap threshold = 0.02 (build_cannot_link(tracklets, topo, 0.02)); tracklet max_gap_s=2   (vitb_unsup_mega.py:99,102)
+- Optimizer = AdamW: backbone lr 1e-5, head lr 3e-4, weight_decay 1e-4 (both groups); AMP fp16 + GradScaler   (vitb_unsup_mega.py:177-180)
+- --target / --wall = 1000 steps / 300 s wall per chunk (checkpoint-resume chunking)   (vitb_unsup_mega.py:79-80,203)
+- --seed default = 40 (torch, numpy, CacheLoader rng, sampling rng)   (vitb_unsup_mega.py:90,106-107,182)
+- --teacher-npz default = _vitb_dst_emb_v4.npz (5 keys s5..s9, 997x768 each; only s7/s8/s9 averaged via K2 substring filter)   (vitb_unsup_mega.py:37,92,111-113)
+- Fused-teacher weights (WD, WM) = 0.4 (DINOv2 dst-trio, 768-d) / 0.6 (Mega n_stage=1 trio, 1536-d); output t0 = 2304-d, 997 rows   (make_fused_teacher.py:15,31-33)
+- Super-teacher v1 weights = mega2ft trio 0.45, mega2 trio 0.35, hc16/17/18 trio 0.20; output t0 = 3840-d (1536+1536+768)   (make_super_teacher.py:23-27,59-61)
+- Super-teacher v2 weights = sup2 trio 0.45, mega2ft trio 0.30, hc trio 0.25; output _super_teacher2_emb.npz t0 = 3840-d   (make_super_teacher2.py:16-20,39-41)
+- Teacher-diagnostic link mining = mutual_knn_from_sim k=2, same-camera+diagonal masked to -2; dorsal = both cameras != '66.130'   (make_super_teacher.py:30-40,67-71)
+- embed_tids batch size = 16 tracklets, eval frames evenly spaced (linspace)   (vitb_unsup.py:103,88-91)
+
+## GOTCHAS
+- momentum=0.2 is the coefficient on the OLD proxy: each update moves the proxy 80% toward the new embedding (p <- normalize(0.2 p + 0.8 f)). Writing it as a conventional 'slow EMA with momentum 0.2 on the update' inverts the semantics.
+- The two softmaxes have DISJOINT supports: the intra proxy CE normalizes over SAME-camera proxies only, and the link loss normalizes over ALL DIFFERENT-camera proxies (logsumexp over dc). Neither is a softmax over all proxies. The link positive o is inside dc, so it is standard InfoNCE per linked proxy, confidence-weighted and normalized by sum of confidences.
+- The weighted-concat 'inner product = weighted cosine' identity is exact ONLY because each part is row-L2-normalized before scaling by sqrt(w) and the weights sum to 1 — the final renormalization in all three teacher scripts is then a numerical no-op, not part of the math.
+- Fused vs super teacher row alignment differ: make_fused_teacher.py explicitly reorders the Mega npz rows to the DINOv2 ids order (mids.index); make_super_teacher.py and v2 take ids from the FIRST source npz and concatenate the others WITHOUT reordering (they silently assume all sweep npz share one tracklet order).
+- Teacher-key selection in vitb_unsup_mega.py is substring-based: keys containing 's7', 's8' or 's9' anywhere OR exactly 't0'. With the default _vitb_dst_emb_v4.npz this silently drops the s5/s6 (k=1) students and averages only the k=2 trio; a single-key fused/super teacher rides in via 't0'. The teacher can have any dimensionality (768/2304/3840) because it is used only for mining labels/links, never for feature regression.
+- Teacher labels and links are mined ONCE before training and frozen for the whole run (no clustering refresh) — unlike train_finetune_iics.py, which refreshes pseudo-labels every refresh_every steps. Do not describe Stage 4 as iterative self-training.
+- Initial proxies come from the STUDENT's own embeddings (mean over cluster members, embed_tids at step start / resume), NOT from the teacher embeddings.
+- --supervised keeps proxies PER (camera, GT identity) — it does not collapse an identity to one global class; cross-camera identity information enters only through the link loss with conf=1.0 (all same-GT cross-camera proxy pairs). Also, the teacher npz is still loaded in this mode (defines tracklet order) but its embeddings are unused; and the supervised run is deployment-mode transductive over all 7 cameras.
+- n_stage=2 unfreezes Swin stages 3 AND 4 — including the 18-block stage 3, most of the network's depth — and those runs used --P 6 (a launch flag; the script default P=10 would mislead if read off the argparse).
+- The student embedding used in ALL losses is the 256-d projection (Linear+AIBN1d+ReLU, L2-normalized), not the 1536-d backbone feature; the per-camera classifier is a bias-free cosine classifier with fixed scale 16, not a plain linear layer.
+- Images are ImageNet-normalized at 518x518 and THEN bilinearly resized to 384 inside the forward pass (normalize-then-resize on GPU), not resized during preprocessing.
+- Train-time frame sampling draws T=2 frame indices WITH replacement (rng.integers), and tracklet sampling within a cluster/proxy uses replacement only when the group has fewer than K members; eval frames are evenly spaced (linspace).
+- The mega trio inside the FUSED teacher is the n_stage=1 Mega students (_sweep_mega_trio_emb.npz, s40/41/42), whereas the SUPER teachers use the n_stage=2 trios (mega2, mega2ft) — easy to conflate. The 'hc trio' in both super teachers is key-indices [3,4,5] (m3,m4,m5 = hc16/17/18, 768-d DINOv2 students) of _sweep_final_zerohuman_emb.npz; indices [0,1,2] there are the deploy trio, not hc.
+- Dorsal-link-precision reference numbers hard-coded in prints (DINOv2 0.514, fused 0.616, Mega 0.621, super-v1 0.649) are diagnostics on mutual-kNN k=2 teacher links excluding camera 66.130, not retrieval metrics — do not cite them as rank-1.
+- AIBN1d bypasses its BatchNorm branch when the batch has a single sample (bn = x if x.size(0) <= 1), so single-sample inference differs slightly from the batched formula.
+- In the odd step the proxy bank must be .clone()d before the similarity matmul (sim = embf @ proxies.clone().t()) because the bank is updated in place afterwards; describing the bank as a detached constant per step is only correct because of this clone.

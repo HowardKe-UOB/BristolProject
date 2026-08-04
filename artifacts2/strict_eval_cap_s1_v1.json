@@ -1,0 +1,40 @@
+{
+  "ckpt": "_vitb_cap_s1_ckpt.pt",
+  "step": 1000,
+  "champion recipe": {
+    "plain": {
+      "mAP": 0.337,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.4785,
+      "rank-5": 0.7055,
+      "rank-10": 0.816
+    },
+    "st": {
+      "mAP": 0.3395,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.4969,
+      "rank-5": 0.7117,
+      "rank-10": 0.8221
+    }
+  },
+  "+ flip TTA": {
+    "plain": {
+      "mAP": 0.3267,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.4724,
+      "rank-5": 0.7178,
+      "rank-10": 0.816
+    },
+    "st": {
+      "mAP": 0.3268,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.4785,
+      "rank-5": 0.7178,
+      "rank-10": 0.816
+    }
+  }
+}

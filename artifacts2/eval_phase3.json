@@ -1,0 +1,33 @@
+{
+  "features": "random",
+  "frames_per_tracklet": 6,
+  "results": {
+    "full_cross_camera": {
+      "mAP": 0.0199,
+      "n_query_scored": 943,
+      "n_query_total": 943,
+      "n_gallery": 943,
+      "rank-1": 0.0117,
+      "rank-5": 0.0626,
+      "rank-10": 0.122
+    },
+    "leave_out_66.130": {
+      "mAP": 0.0194,
+      "n_query_scored": 163,
+      "n_query_total": 163,
+      "n_gallery": 834,
+      "rank-1": 0.0061,
+      "rank-5": 0.0429,
+      "rank-10": 0.1227
+    },
+    "open_set_split": {
+      "mAP": 0.0589,
+      "n_query_scored": 20,
+      "n_query_total": 20,
+      "n_gallery": 303,
+      "rank-1": 0.05,
+      "rank-5": 0.25,
+      "rank-10": 0.35
+    }
+  }
+}

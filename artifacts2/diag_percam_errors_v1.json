@@ -1,0 +1,162 @@
+{
+  "script": "diag_percam_errors.py",
+  "embeddings_file": "_vitb_dst_emb_v4.npz",
+  "seeds": [
+    "s7",
+    "s8",
+    "s9"
+  ],
+  "oblique_camera": "66.130",
+  "per_camera": {
+    "66.1": {
+      "full_gallery": {
+        "mAP": 0.3351,
+        "n_query_scored": 56,
+        "n_gallery": 933,
+        "rank-1": 0.4821,
+        "rank-5": 0.6607,
+        "rank-10": 0.8214
+      },
+      "dorsal_only_gallery": {
+        "mAP": 0.3465,
+        "n_query_scored": 56,
+        "n_gallery": 770,
+        "rank-1": 0.4821,
+        "rank-5": 0.6786,
+        "rank-10": 0.8214
+      },
+      "n_query_full": 56,
+      "n_query_dorsal": 56,
+      "n_rank1_errors": 29,
+      "n_rank1_errors_top1_oblique": 0,
+      "frac_rank1_errors_top1_oblique": 0.0,
+      "n_query_only_oblique_true_match": 0
+    },
+    "66.128": {
+      "full_gallery": {
+        "mAP": 0.3847,
+        "n_query_scored": 136,
+        "n_gallery": 832,
+        "rank-1": 0.5441,
+        "rank-5": 0.7647,
+        "rank-10": 0.8529
+      },
+      "dorsal_only_gallery": {
+        "mAP": 0.3938,
+        "n_query_scored": 136,
+        "n_gallery": 669,
+        "rank-1": 0.5441,
+        "rank-5": 0.7721,
+        "rank-10": 0.8676
+      },
+      "n_query_full": 136,
+      "n_query_dorsal": 136,
+      "n_rank1_errors": 62,
+      "n_rank1_errors_top1_oblique": 8,
+      "frac_rank1_errors_top1_oblique": 0.129,
+      "n_query_only_oblique_true_match": 0
+    },
+    "66.133": {
+      "full_gallery": {
+        "mAP": 0.3694,
+        "n_query_scored": 118,
+        "n_gallery": 877,
+        "rank-1": 0.5424,
+        "rank-5": 0.7034,
+        "rank-10": 0.7712
+      },
+      "dorsal_only_gallery": {
+        "mAP": 0.3763,
+        "n_query_scored": 118,
+        "n_gallery": 714,
+        "rank-1": 0.5508,
+        "rank-5": 0.7288,
+        "rank-10": 0.8305
+      },
+      "n_query_full": 118,
+      "n_query_dorsal": 118,
+      "n_rank1_errors": 54,
+      "n_rank1_errors_top1_oblique": 0,
+      "frac_rank1_errors_top1_oblique": 0.0,
+      "n_query_only_oblique_true_match": 0
+    },
+    "66.139": {
+      "full_gallery": {
+        "mAP": 0.3138,
+        "n_query_scored": 125,
+        "n_gallery": 872,
+        "rank-1": 0.52,
+        "rank-5": 0.608,
+        "rank-10": 0.672
+      },
+      "dorsal_only_gallery": {
+        "mAP": 0.3154,
+        "n_query_scored": 111,
+        "n_gallery": 709,
+        "rank-1": 0.4955,
+        "rank-5": 0.6036,
+        "rank-10": 0.6757
+      },
+      "n_query_full": 125,
+      "n_query_dorsal": 111,
+      "n_rank1_errors": 60,
+      "n_rank1_errors_top1_oblique": 10,
+      "frac_rank1_errors_top1_oblique": 0.1667,
+      "n_query_only_oblique_true_match": 14
+    },
+    "66.3": {
+      "full_gallery": {
+        "mAP": 0.2575,
+        "n_query_scored": 239,
+        "n_gallery": 744,
+        "rank-1": 0.4184,
+        "rank-5": 0.6318,
+        "rank-10": 0.6904
+      },
+      "dorsal_only_gallery": {
+        "mAP": 0.2628,
+        "n_query_scored": 239,
+        "n_gallery": 581,
+        "rank-1": 0.4017,
+        "rank-5": 0.6067,
+        "rank-10": 0.7071
+      },
+      "n_query_full": 239,
+      "n_query_dorsal": 239,
+      "n_rank1_errors": 139,
+      "n_rank1_errors_top1_oblique": 1,
+      "frac_rank1_errors_top1_oblique": 0.0072,
+      "n_query_only_oblique_true_match": 0
+    },
+    "66.33": {
+      "full_gallery": {
+        "mAP": 0.3922,
+        "n_query_scored": 106,
+        "n_gallery": 890,
+        "rank-1": 0.5566,
+        "rank-5": 0.783,
+        "rank-10": 0.8585
+      },
+      "dorsal_only_gallery": {
+        "mAP": 0.3781,
+        "n_query_scored": 106,
+        "n_gallery": 727,
+        "rank-1": 0.434,
+        "rank-5": 0.7925,
+        "rank-10": 0.8868
+      },
+      "n_query_full": 106,
+      "n_query_dorsal": 106,
+      "n_rank1_errors": 47,
+      "n_rank1_errors_top1_oblique": 13,
+      "frac_rank1_errors_top1_oblique": 0.2766,
+      "n_query_only_oblique_true_match": 0
+    }
+  },
+  "mean_over_dorsal_queries": {
+    "full_gallery_rank1": 0.5106,
+    "dorsal_only_rank1": 0.4847,
+    "full_gallery_mAP": 0.3421,
+    "dorsal_only_mAP": 0.3455
+  }
+}

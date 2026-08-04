@@ -1,0 +1,75 @@
+{
+  "P1": {
+    "mAP": 0.5695,
+    "n_query_scored": 163,
+    "n_gallery": 834,
+    "rank-1": 0.9018,
+    "rank-5": 0.9571,
+    "rank-10": 0.9693
+  },
+  "query_66.1": {
+    "mAP": 0.3308,
+    "n_query_scored": 56,
+    "n_gallery": 933,
+    "rank-1": 0.5357,
+    "rank-5": 0.6607,
+    "rank-10": 0.7679
+  },
+  "query_66.128": {
+    "mAP": 0.3419,
+    "n_query_scored": 136,
+    "n_gallery": 832,
+    "rank-1": 0.5735,
+    "rank-5": 0.7353,
+    "rank-10": 0.7868
+  },
+  "query_66.130": {
+    "mAP": 0.5695,
+    "n_query_scored": 163,
+    "n_gallery": 834,
+    "rank-1": 0.9018,
+    "rank-5": 0.9571,
+    "rank-10": 0.9693
+  },
+  "query_66.133": {
+    "mAP": 0.3139,
+    "n_query_scored": 118,
+    "n_gallery": 877,
+    "rank-1": 0.5169,
+    "rank-5": 0.6356,
+    "rank-10": 0.7034
+  },
+  "query_66.139": {
+    "mAP": 0.2948,
+    "n_query_scored": 125,
+    "n_gallery": 872,
+    "rank-1": 0.496,
+    "rank-5": 0.632,
+    "rank-10": 0.752
+  },
+  "query_66.3": {
+    "mAP": 0.2345,
+    "n_query_scored": 239,
+    "n_gallery": 744,
+    "rank-1": 0.4351,
+    "rank-5": 0.6192,
+    "rank-10": 0.7029
+  },
+  "query_66.33": {
+    "mAP": 0.3781,
+    "n_query_scored": 106,
+    "n_gallery": 890,
+    "rank-1": 0.5094,
+    "rank-5": 0.8019,
+    "rank-10": 0.9151
+  },
+  "dorsal_mean_r1": 0.5111,
+  "P2": {
+    "mAP": 0.3071,
+    "n_query_scored": 943,
+    "n_gallery": 943,
+    "rank-1": 0.5207,
+    "rank-5": 0.7073,
+    "rank-10": 0.7678
+  }
+}

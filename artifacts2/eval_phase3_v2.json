@@ -1,0 +1,33 @@
+{
+  "features": "dino",
+  "frames_per_tracklet": 6,
+  "results": {
+    "full_cross_camera": {
+      "mAP": 0.0832,
+      "n_query_scored": 943,
+      "n_query_total": 943,
+      "n_gallery": 943,
+      "rank-1": 0.1463,
+      "rank-5": 0.3319,
+      "rank-10": 0.4528
+    },
+    "leave_out_66.130": {
+      "mAP": 0.1044,
+      "n_query_scored": 163,
+      "n_query_total": 163,
+      "n_gallery": 834,
+      "rank-1": 0.1963,
+      "rank-5": 0.5153,
+      "rank-10": 0.6871
+    },
+    "open_set_split": {
+      "mAP": 0.2042,
+      "n_query_scored": 20,
+      "n_query_total": 20,
+      "n_gallery": 303,
+      "rank-1": 0.3,
+      "rank-5": 0.4,
+      "rank-10": 0.55
+    }
+  }
+}

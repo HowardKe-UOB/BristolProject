@@ -1,0 +1,74 @@
+{
+  "k2-students mean (s7,s8,s9)": {
+    "plain": {
+      "mAP": 0.5359,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.8834,
+      "rank-5": 0.9571,
+      "rank-10": 0.9693
+    },
+    "st": {
+      "mAP": 0.536,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.8834,
+      "rank-5": 0.9571,
+      "rank-10": 0.9693
+    }
+  },
+  "all-students mean (5)": {
+    "plain": {
+      "mAP": 0.5348,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.8344,
+      "rank-5": 0.9571,
+      "rank-10": 0.9693
+    },
+    "st": {
+      "mAP": 0.5345,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.8282,
+      "rank-5": 0.9571,
+      "rank-10": 0.9693
+    }
+  },
+  "k2-students + CAP5 (8 terms)": {
+    "plain": {
+      "mAP": 0.519,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.8098,
+      "rank-5": 0.9509,
+      "rank-10": 0.9632
+    },
+    "st": {
+      "mAP": 0.5193,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.816,
+      "rank-5": 0.9509,
+      "rank-10": 0.9632
+    }
+  },
+  "ALL 10 equal weight": {
+    "plain": {
+      "mAP": 0.5265,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.8098,
+      "rank-5": 0.9509,
+      "rank-10": 0.9571
+    },
+    "st": {
+      "mAP": 0.5261,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.8098,
+      "rank-5": 0.9509,
+      "rank-10": 0.9571
+    }
+  }
+}

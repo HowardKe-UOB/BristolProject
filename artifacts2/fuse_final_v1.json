@@ -1,0 +1,197 @@
+{
+  "greedy_set": [
+    "sup2_92",
+    "hc18",
+    "sup2_91"
+  ],
+  "greedy-P2 set": {
+    "P1": {
+      "mAP": 0.6304,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.8773,
+      "rank-5": 0.9693,
+      "rank-10": 0.9816
+    },
+    "dorsal": 0.6643833333333333,
+    "P2": {
+      "mAP": 0.45,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.6628,
+      "rank-5": 0.7996,
+      "rank-10": 0.8547
+    }
+  },
+  "greedy-P2 set+clust": {
+    "P1": {
+      "mAP": 0.6304,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.8773,
+      "rank-5": 0.9693,
+      "rank-10": 0.9816
+    },
+    "dorsal": 0.6643833333333333,
+    "P2": {
+      "mAP": 0.4501,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.6628,
+      "rank-5": 0.7996,
+      "rank-10": 0.8547
+    }
+  },
+  "sup2_trio": {
+    "P1": {
+      "mAP": 0.5765,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.8589,
+      "rank-5": 0.9448,
+      "rank-10": 0.9571
+    },
+    "dorsal": 0.6845666666666667,
+    "P2": {
+      "mAP": 0.4204,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.632,
+      "rank-5": 0.7773,
+      "rank-10": 0.8367
+    }
+  },
+  "sup2_trio+clust": {
+    "P1": {
+      "mAP": 0.5765,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.8589,
+      "rank-5": 0.9448,
+      "rank-10": 0.9571
+    },
+    "dorsal": 0.6845666666666667,
+    "P2": {
+      "mAP": 0.4206,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.632,
+      "rank-5": 0.7773,
+      "rank-10": 0.8367
+    }
+  },
+  "hc + all3 mega2 trios": {
+    "P1": {
+      "mAP": 0.639,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.9018,
+      "rank-5": 0.9693,
+      "rank-10": 0.9755
+    },
+    "dorsal": 0.6667166666666667,
+    "P2": {
+      "mAP": 0.4425,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.6437,
+      "rank-5": 0.789,
+      "rank-10": 0.8462
+    }
+  },
+  "hc + all3 mega2 trios+clust": {
+    "P1": {
+      "mAP": 0.639,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.9018,
+      "rank-5": 0.9693,
+      "rank-10": 0.9755
+    },
+    "dorsal": 0.6667166666666667,
+    "P2": {
+      "mAP": 0.4428,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.6448,
+      "rank-5": 0.789,
+      "rank-10": 0.8462
+    }
+  },
+  "sup2_trio + mega2ft_trio": {
+    "P1": {
+      "mAP": 0.5719,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.8712,
+      "rank-5": 0.9509,
+      "rank-10": 0.9571
+    },
+    "dorsal": 0.66755,
+    "P2": {
+      "mAP": 0.4192,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.6129,
+      "rank-5": 0.7815,
+      "rank-10": 0.8356
+    }
+  },
+  "sup2_trio + mega2ft_trio+clust": {
+    "P1": {
+      "mAP": 0.5719,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.8712,
+      "rank-5": 0.9509,
+      "rank-10": 0.9571
+    },
+    "dorsal": 0.66755,
+    "P2": {
+      "mAP": 0.4193,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.6129,
+      "rank-5": 0.7815,
+      "rank-10": 0.8356
+    }
+  },
+  "all19": {
+    "P1": {
+      "mAP": 0.6417,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.8896,
+      "rank-5": 0.9755,
+      "rank-10": 0.9755
+    },
+    "dorsal": 0.6549,
+    "P2": {
+      "mAP": 0.4303,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.6405,
+      "rank-5": 0.7911,
+      "rank-10": 0.8484
+    }
+  },
+  "all19+clust": {
+    "P1": {
+      "mAP": 0.6417,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.8896,
+      "rank-5": 0.9755,
+      "rank-10": 0.9755
+    },
+    "dorsal": 0.6549,
+    "P2": {
+      "mAP": 0.4303,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.6405,
+      "rank-5": 0.7911,
+      "rank-10": 0.8484
+    }
+  }
+}

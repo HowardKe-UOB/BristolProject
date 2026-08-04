@@ -1,0 +1,110 @@
+{
+  "student _vitb_dst_s5_ckpt": {
+    "plain": {
+      "mAP": 0.4732,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7117,
+      "rank-5": 0.8896,
+      "rank-10": 0.9755
+    },
+    "st": {
+      "mAP": 0.4728,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7055,
+      "rank-5": 0.8896,
+      "rank-10": 0.9755
+    }
+  },
+  "student _vitb_dst_s6_ckpt": {
+    "plain": {
+      "mAP": 0.4814,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7117,
+      "rank-5": 0.8773,
+      "rank-10": 0.9141
+    },
+    "st": {
+      "mAP": 0.4825,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7055,
+      "rank-5": 0.8834,
+      "rank-10": 0.9141
+    }
+  },
+  "student _vitb_dst_s7_ckpt": {
+    "plain": {
+      "mAP": 0.4808,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.773,
+      "rank-5": 0.9264,
+      "rank-10": 0.9448
+    },
+    "st": {
+      "mAP": 0.4804,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.773,
+      "rank-5": 0.9264,
+      "rank-10": 0.9448
+    }
+  },
+  "ens CAP5 (ref)": {
+    "plain": {
+      "mAP": 0.4912,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7485,
+      "rank-5": 0.9325,
+      "rank-10": 0.9571
+    },
+    "st": {
+      "mAP": 0.4904,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7423,
+      "rank-5": 0.9387,
+      "rank-10": 0.9632
+    }
+  },
+  "ens CAP5+students": {
+    "plain": {
+      "mAP": 0.5117,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7607,
+      "rank-5": 0.9509,
+      "rank-10": 0.9571
+    },
+    "st": {
+      "mAP": 0.5108,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7546,
+      "rank-5": 0.9509,
+      "rank-10": 0.9571
+    }
+  },
+  "ens CAP5+students x2": {
+    "plain": {
+      "mAP": 0.5161,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7669,
+      "rank-5": 0.9509,
+      "rank-10": 0.9571
+    },
+    "st": {
+      "mAP": 0.5165,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7669,
+      "rank-5": 0.9509,
+      "rank-10": 0.9571
+    }
+  }
+}

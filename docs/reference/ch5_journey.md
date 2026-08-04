@@ -1,0 +1,52 @@
+# journey
+
+## P1 journey (leave-out 66.130 = new-camera onboarding, zero-human). Columns: milestone | what changed | P1 rank-1 | rank-5 | mAP | source file (dict key)  [st_final_comparison_v1.json, new_levers2_v1.json, vitb_tta_v1.json, strict_eval_cap_v1.json, cap_ensemble_v1.json, cap_ensemble5_v1.json, final_fusion_v1.json, fuse_hetero_v1.json, mega_search_v1.json]
+0.503 | ViT-B unsup champion, old emb256 (256-d projection) readout, cosine | 0.5031 | 0.7362 | 0.3295 | st_final_comparison_v1.json [UNSUPERVISED/emb256/ cosine]
+0.620 | same ckpt, retrieve on 768-d pooled backbone feature (feat768), cosine | 0.6196 | 0.8405 | 0.3473 | st_final_comparison_v1.json [UNSUPERVISED/feat768/ cosine]
+0.663 | feat768 + per-camera centering + CA-Jaccard re-rank (CC+RR) | 0.6626 | 0.7914 | 0.4079 | st_final_comparison_v1.json [UNSUPERVISED/feat768/ CC+RR]
+0.706 | RRF(CC,PCAW,CC-RR) rank fusion, k=20 (plain) | 0.7055 | 0.8589 | 0.4229 | new_levers2_v1.json [UNSUP/RRF(CC,PCAW,CC-RR) k=20 / plain]
+0.718 | + flip TTA (champion recipe) (plain; st variant r1 0.7117 r5 0.8896 mAP 0.4266) | 0.7178 | 0.8773 | 0.4252 | vitb_tta_v1.json [flip TTA (champion) / plain]
+0.804 (0.816-era) | CAP camera-aware proxies + flip TTA (champion recipe, plain) | 0.8037 | 0.9325 | 0.4444 | strict_eval_cap_v1.json [+ flip TTA / plain]; cap_ensemble_v1.json [CAP s0 / plain] identical
+0.749 | CAP 5-seed ensemble, distance-mean (plain no-ST; +ST subset-avg k=5 = 0.7423/0.9387/0.4904) | 0.7485 | 0.9325 | 0.4912 | cap_ensemble5_v1.json [ens mean(3 champion dists) / plain]; cap_ens_curve_v1.json [k=5]
+0.883 | k=2 ensemble-distilled student trio (s7,s8,s9) mean = strict-holdout headline | 0.8834 | 0.9571 | 0.5359 | final_fusion_v1.json [k2-students mean (s7,s8,s9) / plain]; sweep_final_zerohuman_v1.json [P1] gives 0.8834/0.9693/0.5895
+0.926 | + heterogeneous MegaDescriptor fusion, dino6 + mega3 | 0.9264 | 0.9632 | 0.6334 | fuse_hetero_v1.json [dino6+mega3 / P1]
+0.945 | full-zoo greedy max-P1 set {dep10,m2_62,dep11,r3_100} (scalar P1 only stored; no r5/mAP) | 0.9448 | (not stored) | (not stored) | mega_search_v1.json [max_P1 / P1]
+
+## P2 journey (full transductive, 943 queries = whole-herd auto-sort, zero-human). Columns: milestone | what changed | P2 rank-1 | mAP | source file (dict key)  [validate_protocols_v1.json, validate_deploy_v1.json, cluster_rerank_guard_v1.json, fuse_hetero_v1.json, fuse_final_v1.json, mega_search_v1.json, mega_search2_v1.json]
+0.344 | historical label-free FULL transductive (IICS/SSL, pre-artifacts2 phase) | 0.344 | (n/a) | NOT IN artifacts2 - value only from MEMORY.md / earlier phase; flagged
+0.516 | k=2 student trio, per-camera sweep, full transductive (plain; st 0.5164/0.3317) | 0.5164 | 0.3306 | validate_protocols_v1.json [full_transductive / plain]
+0.549 | deployment-mode training on all 7 cameras (plain; st 0.5504/0.3434) | 0.5493 | 0.3424 | validate_deploy_v1.json [full_transductive / plain]
+0.585 | + cluster-consistency rerank (P2 clustered vs base 0.5536/0.3475) | 0.5854 | 0.3610 | cluster_rerank_guard_v1.json [P2 / clustered]
+0.616 | + heterogeneous Mega fusion, dino6 + mega3 | 0.6161 | 0.3921 | fuse_hetero_v1.json [dino6+mega3 / P2]
+0.627 | dino6 + mega3 + cluster rerank (max-P2 operating point) | 0.6267 | 0.3899 | fuse_hetero_v1.json [dino6+mega3 +clust / P2]
+0.643 | hc + all-3 mega2 trios fusion | 0.6437 | 0.4425 | fuse_final_v1.json [hc + all3 mega2 trios / P2]
+0.663 | rung-2 super-teacher greedy-P2 set {sup2_92,hc18,sup2_91} | 0.6628 | 0.4500 | fuse_final_v1.json [greedy-P2 set / P2]
+0.671 | full-zoo greedy max-P2 set {sup92,hc18,sup91,r3_102} (scalar only) | 0.6713 | (not stored) | mega_search_v1.json [max_P2 / P2]; mega_search2_v1.json [P2_plain]
+
+## Dorsal journey (dorsal_mean_r1 = mean rank-1 over 6 dorsal-camera query protocols, zero-human). Columns: milestone | what changed | dorsal mean rank-1 | source file (dict key)  [mega_frozen_v1.json, sweep_base_s8_v1.json, sweep_dep_s10_v1.json, sweep_sup2_trio_v1.json, fuse_final_v1.json, mega_search_v1.json, mega_search2_v1.json]
+0.42 | frozen DINOv2 ViT-B dorsal (natural-image SSL bottleneck baseline) | ~0.42 | NOT IN artifacts2 as a clean field - value only from MEMORY.md; flagged
+0.50 | frozen MegaDescriptor-L-384 dorsal (animal foundation model, untrained) | 0.5013 | mega_frozen_v1.json [dorsal_mean = 0.50125]
+0.50-0.51 | zero-human base/deploy DINOv2 student dorsal | 0.4973 (base s8) / 0.5111 (deploy s10) | sweep_base_s8_v1.json [dorsal_mean_r1]; sweep_dep_s10_v1.json [dorsal_mean_r1]
+0.685 | rung-2 super-teacher mega2 trio (sup2_trio), clean 3-model | 0.6846 | sweep_sup2_trio_v1.json [dorsal_mean_r1 = 0.6845666]; fuse_final_v1.json [sup2_trio / dorsal] identical
+0.690 | full-zoo greedy max-dorsal set {r3_102,sup91,m2_61} | 0.6903 | mega_search_v1.json [max_dorsal / dorsal = 0.6903333]; mega_search2_v1.json [dorsal_plain]
+
+## Reference-value verification (all headline reference numbers reproduced exactly from artifacts; NO contradictions found). Columns: claim | reference value | exact stored value | source file (dict key)  [mega_search_v1.json, sweep_megasup_s200_v1.json, final_fusion_v1.json, sweep_final_zerohuman_v1.json]
+final zero-human P1 | 0.945 | 0.9448 | mega_search_v1.json [max_P1 / P1] - MATCH
+final zero-human dorsal | 0.690 | 0.6903333 | mega_search_v1.json [max_dorsal / dorsal] - MATCH
+final zero-human P2 | 0.671 | 0.6713 | mega_search_v1.json [max_P2 / P2] - MATCH
+fair supervised (Mega backbone) P1 | 0.969 | 0.9693 | sweep_megasup_s200_v1.json [P1 / rank-1] - MATCH
+fair supervised (Mega backbone) dorsal | 0.888 | 0.8878833 | sweep_megasup_s200_v1.json [dorsal_mean_r1] - MATCH
+fair supervised (Mega backbone) P2 | 0.790 | 0.79 | sweep_megasup_s200_v1.json [P2 / rank-1] - MATCH
+strict-holdout P1 | 0.883 | 0.8834 | final_fusion_v1.json [k2-students mean (s7,s8,s9) / rank-1]; sweep_final_zerohuman_v1.json [P1 / rank-1] - MATCH
+
+## GOTCHAS
+- HEADLINE FIELD (which number is the paper number): For the per-camera/protocol eval files the headline is rank-1 read from the '/plain' sub-dict (there is also a near-identical '/st' spatio-temporal-mask variant differing by <=0.002; use plain unless the ST mask is being showcased). For fusion/summary files (fuse_hetero, final_best, mega_search, fuse_final) the top-level scalars 'P1'/'dorsal'/'P2' and 'dorsal_mean_r1' ARE rank-1 (dorsal is the mean rank-1 over 6 dorsal cameras). 'P1' and 'query_66.130' are the SAME protocol (leave-out oblique camera 66.130); many files store both, identical values.
+- MISSING milestone value 0.652: The P2 sub-milestone '0.643-0.652' — the 0.652 (mega2ft greedy 3-set {m2ft82,hc18,m2ft80}) cited in MEMORY.md is NOT recoverable from any current artifact. fuse_final_v1.json was regenerated after the rung-2 (sup2) super-teacher run and its 'greedy-P2 set' now stores the sup2 result 0.6628 (=0.663), overwriting the earlier 0.652 state. Only 0.643 (fuse_final 'hc + all3 mega2 trios' = 0.6437) survives in the file.
+- MISSING milestone value 0.816: The P1 '0.816-era' number (CAP + flip TTA + RRF(PCAW,CC-RR), from cap_confirm.py per MEMORY.md) is NOT stored as a clean field anywhere in artifacts2. The closest artifact-backed CAP+TTA value is 0.8037 (strict_eval_cap_v1.json '+ flip TTA'/plain, and cap_ensemble_v1.json 'CAP s0'). cap_breakdown_v1.json holds the CAP and CAP+TTA component recipes (best single field there = CAP+TTA/cosine+RR mAP 0.4212, r1 0.6871) but no 0.816 rank-1 entry. Report 0.804 as the reproducible value; treat 0.816 as memory-only.
+- MISSING milestone value 0.344 (P2) and 0.42 (dorsal frozen-DINOv2): neither is stored in artifacts2. 0.344 is the pre-artifacts2 IICS/SSL full-transductive historical baseline; 0.42 is the frozen DINOv2 ViT-B dorsal figure. Both come only from MEMORY.md narrative; do not cite an artifacts2 file for them.
+- 0.749 vs 0.742 ambiguity (P1 CAP 5-seed ensemble): two legitimate stored numbers. Plain no-ST 5-seed distance-mean = 0.7485/0.9325/0.4912 (cap_ensemble5_v1.json 'ens mean(3 champion dists)'/plain, rounds to 0.749). The subset-averaged +ST k=5 point = 0.7423/0.9387/0.4904 (cap_ens_curve_v1.json ['5']). MEMORY.md's honest headline uses 0.742-0.749; both are real, differing by readout (plain vs +ST) and averaging method.
+- 0.945 / 0.690 / 0.671 have NO stored rank-5 or mAP: mega_search_v1.json stores only a single scalar per protocol per greedy set (P1/dorsal/P2 = rank-1). If the results chapter needs r5/mAP for these three headline operating points, they are not in the artifact and would have to be recomputed. Also note these are greedy-on-test selections (small n=163 for P1) with meta-overfit risk, per MEMORY.md — the 'clean' non-greedy zero-human numbers are lower (e.g. all-strong ensembles ~0.90/0.66/0.64).
+- 'UNSUP > SUP' trap (do NOT claim): the zero-human 0.945 P1 was originally compared against a DINOv2-ViT-B supervised twin (P1 0.8957, dorsal 0.9204, P2 0.8431 — fuse_supervised_v1.json 'SUP only (labels)' / sweep_sup_full_v1.json). That comparison is UNFAIR (different backbone). The FAIR same-backbone supervised baseline is the MegaDescriptor one (0.969/0.888/0.790, sweep_megasup_s200_v1.json), which beats zero-human on all three protocols. Use 0.969/0.888/0.790 as the supervised reference, not the DINOv2 twin.
+- n=163 for P1 / query_66.130 (small): +/-1 query ~= 0.6 rank-1 points, so 0.883 vs 0.877 etc. are within 1 query. P2 and dorsal-camera protocols have larger n (943 full; 56-239 per dorsal camera). All P1 files consistently report n_query_scored=163, n_gallery=834.
+- Dataset dates: files span 2026-06-27 (phase-3 baselines eval_phase3*.json: frozen DINOv2 full-cross rank-1 0.1463) through 2026-07-13 (mega_search2). The journey is chronologically coherent with MEMORY.md. eval_phase3_v2.json holds the earliest frozen-backbone numbers (leave_out_66.130 rank-1 0.1963, mAP 0.1044) if a starting point below 0.503 is wanted.
+- strict-holdout P1 0.883 with cluster rerank -> mAP 0.565: MEMORY.md cites strict P1 0.883 r1 / 0.565 mAP (from strict_p1_cluster.py). That exact 0.565 mAP field is NOT in a saved artifact; the k2-students trio mAP in final_fusion_v1.json is 0.5359, and cluster_rerank_finalzh_v1.json clustered P1 = rank-1 0.8957 / mAP 0.5921 (a different 6-model zero-human stack). Cite 0.8834 rank-1 for the 0.883 headline; treat the 0.565 mAP as memory-only unless the strict_p1_cluster artifact is located.

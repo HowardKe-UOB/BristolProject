@@ -1,0 +1,116 @@
+{
+  "s8 only": {
+    "P1": {
+      "mAP": 0.5071,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.8466,
+      "rank-5": 0.9509,
+      "rank-10": 0.9632
+    },
+    "dorsal_mean_r1": 0.4972999999999999,
+    "P2": {
+      "mAP": 0.3136,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.4889,
+      "rank-5": 0.6882,
+      "rank-10": 0.7646
+    }
+  },
+  "s15 only": {
+    "P1": {
+      "mAP": 0.4977,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.773,
+      "rank-5": 0.9325,
+      "rank-10": 0.9509
+    },
+    "dorsal_mean_r1": 0.5325833333333333,
+    "P2": {
+      "mAP": 0.323,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.4952,
+      "rank-5": 0.7073,
+      "rank-10": 0.7847
+    }
+  },
+  "s8 + s15": {
+    "P1": {
+      "mAP": 0.5348,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.8405,
+      "rank-5": 0.9509,
+      "rank-10": 0.9755
+    },
+    "dorsal_mean_r1": 0.5315,
+    "P2": {
+      "mAP": 0.3407,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.5207,
+      "rank-5": 0.7116,
+      "rank-10": 0.789
+    }
+  },
+  "trio (baseline)": {
+    "P1": {
+      "mAP": 0.5354,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.8773,
+      "rank-5": 0.9571,
+      "rank-10": 0.9693
+    },
+    "dorsal_mean_r1": 0.5106,
+    "P2": {
+      "mAP": 0.3306,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.5164,
+      "rank-5": 0.6935,
+      "rank-10": 0.7688
+    }
+  },
+  "trio + s15": {
+    "P1": {
+      "mAP": 0.5437,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.8589,
+      "rank-5": 0.9509,
+      "rank-10": 0.9571
+    },
+    "dorsal_mean_r1": 0.5251,
+    "P2": {
+      "mAP": 0.3405,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.5186,
+      "rank-5": 0.7031,
+      "rank-10": 0.772
+    }
+  },
+  "trio + s15 x2": {
+    "P1": {
+      "mAP": 0.5437,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.865,
+      "rank-5": 0.9509,
+      "rank-10": 0.9632
+    },
+    "dorsal_mean_r1": 0.5380666666666667,
+    "P2": {
+      "mAP": 0.3428,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.5249,
+      "rank-5": 0.7105,
+      "rank-10": 0.7815
+    }
+  }
+}

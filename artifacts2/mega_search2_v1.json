@@ -1,0 +1,10 @@
+{
+  "P2_plain": 0.6713,
+  "P2_+cluster": 0.6713,
+  "P2_union_b0.05": 0.6607,
+  "P2_union_b0.1": 0.6607,
+  "P2_union_b0.15": 0.6607,
+  "dorsal_plain": 0.6903333333333332,
+  "dorsal_cluster": 0.6903333333333332,
+  "dorsal_union_cluster": 0.6830833333333333
+}

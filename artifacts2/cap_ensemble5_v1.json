@@ -1,0 +1,164 @@
+{
+  "CAP s0": {
+    "plain": {
+      "mAP": 0.4444,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.8037,
+      "rank-5": 0.9325,
+      "rank-10": 0.9693
+    },
+    "st": {
+      "mAP": 0.4438,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.8037,
+      "rank-5": 0.9325,
+      "rank-10": 0.9693
+    }
+  },
+  "CAP s1": {
+    "plain": {
+      "mAP": 0.3267,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.4724,
+      "rank-5": 0.7178,
+      "rank-10": 0.816
+    },
+    "st": {
+      "mAP": 0.3268,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.4785,
+      "rank-5": 0.7178,
+      "rank-10": 0.816
+    }
+  },
+  "CAP s2": {
+    "plain": {
+      "mAP": 0.4788,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7239,
+      "rank-5": 0.8528,
+      "rank-10": 0.9325
+    },
+    "st": {
+      "mAP": 0.4791,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7239,
+      "rank-5": 0.8589,
+      "rank-10": 0.9325
+    }
+  },
+  "CAP s3": {
+    "plain": {
+      "mAP": 0.4337,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.6687,
+      "rank-5": 0.8405,
+      "rank-10": 0.8834
+    },
+    "st": {
+      "mAP": 0.4342,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.6687,
+      "rank-5": 0.8466,
+      "rank-10": 0.8957
+    }
+  },
+  "CAP s4": {
+    "plain": {
+      "mAP": 0.4537,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.6871,
+      "rank-5": 0.8896,
+      "rank-10": 0.9325
+    },
+    "st": {
+      "mAP": 0.4581,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.6933,
+      "rank-5": 0.9018,
+      "rank-10": 0.9387
+    }
+  },
+  "ens concat->champion": {
+    "plain": {
+      "mAP": 0.4897,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7117,
+      "rank-5": 0.9325,
+      "rank-10": 0.9632
+    },
+    "st": {
+      "mAP": 0.4897,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7117,
+      "rank-5": 0.9325,
+      "rank-10": 0.9632
+    }
+  },
+  "ens RRF(3 champion dists)": {
+    "plain": {
+      "mAP": 0.4868,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7362,
+      "rank-5": 0.9325,
+      "rank-10": 0.9693
+    },
+    "st": {
+      "mAP": 0.4863,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7362,
+      "rank-5": 0.9387,
+      "rank-10": 0.9693
+    }
+  },
+  "ens mean(3 champion dists)": {
+    "plain": {
+      "mAP": 0.4912,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7485,
+      "rank-5": 0.9325,
+      "rank-10": 0.9571
+    },
+    "st": {
+      "mAP": 0.4904,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7423,
+      "rank-5": 0.9387,
+      "rank-10": 0.9632
+    }
+  },
+  "[oracle] mean(no s1)": {
+    "plain": {
+      "mAP": 0.502,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7853,
+      "rank-5": 0.9387,
+      "rank-10": 0.9632
+    },
+    "st": {
+      "mAP": 0.5014,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7853,
+      "rank-5": 0.9448,
+      "rank-10": 0.9632
+    }
+  }
+}

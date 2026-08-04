@@ -1,0 +1,73 @@
+{
+  "script": "siglip_frozen.py",
+  "model": "vit_so400m_patch16_siglip_gap_384.v2_webli",
+  "img_size": 384,
+  "embeddings_file": "_siglip_frozen_emb.npz",
+  "P1": {
+    "mAP": 0.138,
+    "n_query_scored": 163,
+    "n_gallery": 834,
+    "rank-1": 0.2147,
+    "rank-5": 0.5521,
+    "rank-10": 0.6442
+  },
+  "dorsal_per_camera": {
+    "66.1": {
+      "mAP": 0.1145,
+      "n_query_scored": 56,
+      "n_gallery": 933,
+      "rank-1": 0.2679,
+      "rank-5": 0.5,
+      "rank-10": 0.6071
+    },
+    "66.128": {
+      "mAP": 0.1483,
+      "n_query_scored": 136,
+      "n_gallery": 832,
+      "rank-1": 0.1985,
+      "rank-5": 0.5,
+      "rank-10": 0.6544
+    },
+    "66.133": {
+      "mAP": 0.1236,
+      "n_query_scored": 118,
+      "n_gallery": 877,
+      "rank-1": 0.2203,
+      "rank-5": 0.4237,
+      "rank-10": 0.5424
+    },
+    "66.139": {
+      "mAP": 0.1064,
+      "n_query_scored": 125,
+      "n_gallery": 872,
+      "rank-1": 0.168,
+      "rank-5": 0.392,
+      "rank-10": 0.464
+    },
+    "66.3": {
+      "mAP": 0.103,
+      "n_query_scored": 239,
+      "n_gallery": 744,
+      "rank-1": 0.1841,
+      "rank-5": 0.3975,
+      "rank-10": 0.5146
+    },
+    "66.33": {
+      "mAP": 0.1237,
+      "n_query_scored": 106,
+      "n_gallery": 890,
+      "rank-1": 0.2264,
+      "rank-5": 0.4151,
+      "rank-10": 0.5094
+    }
+  },
+  "dorsal_mean_rank1": 0.2109,
+  "P2": {
+    "mAP": 0.0997,
+    "n_query_scored": 943,
+    "n_gallery": 943,
+    "rank-1": 0.1559,
+    "rank-5": 0.3542,
+    "rank-10": 0.4761
+  }
+}

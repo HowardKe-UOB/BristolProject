@@ -1,0 +1,97 @@
+{
+  "SUP only (labels)": {
+    "P1": {
+      "mAP": 0.7647,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.8957,
+      "rank-5": 0.9755,
+      "rank-10": 0.9755
+    },
+    "dorsal": 0.9204333333333334,
+    "P2": {
+      "mAP": 0.7196,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.8431,
+      "rank-5": 0.9597,
+      "rank-10": 0.983
+    }
+  },
+  "zero-human 9 (no labels)": {
+    "P1": {
+      "mAP": 0.6429,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.8896,
+      "rank-5": 0.9755,
+      "rank-10": 0.9816
+    },
+    "dorsal": 0.6587333333333333,
+    "P2": {
+      "mAP": 0.4342,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.6469,
+      "rank-5": 0.7837,
+      "rank-10": 0.8505
+    }
+  },
+  "SUP + zero-human 9": {
+    "P1": {
+      "mAP": 0.682,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.9325,
+      "rank-5": 0.9816,
+      "rank-10": 0.9877
+    },
+    "dorsal": 0.6951499999999999,
+    "P2": {
+      "mAP": 0.4881,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.6808,
+      "rank-5": 0.8261,
+      "rank-10": 0.8844
+    }
+  },
+  "SUP x3 + zero-human 9": {
+    "P1": {
+      "mAP": 0.7271,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.9387,
+      "rank-5": 0.9755,
+      "rank-10": 0.9877
+    },
+    "dorsal": 0.75705,
+    "P2": {
+      "mAP": 0.5667,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.7317,
+      "rank-5": 0.8802,
+      "rank-10": 0.9343
+    }
+  },
+  "SUP x6 + zero-human 9": {
+    "P1": {
+      "mAP": 0.7536,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.9387,
+      "rank-5": 0.9755,
+      "rank-10": 0.9816
+    },
+    "dorsal": 0.8253333333333331,
+    "P2": {
+      "mAP": 0.6326,
+      "n_query_scored": 943,
+      "n_gallery": 943,
+      "rank-1": 0.772,
+      "rank-5": 0.9215,
+      "rank-10": 0.9586
+    }
+  }
+}

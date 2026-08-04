@@ -1,0 +1,131 @@
+{
+  "consensus_corr": {
+    "s0": 0.7832365960048469,
+    "s1": 0.7887719953714267,
+    "s2": 0.8272858176988078,
+    "s3": 0.8315980621807234,
+    "s4": 0.8175696736166335
+  },
+  "mean(all 5)": {
+    "plain": {
+      "mAP": 0.4912,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7485,
+      "rank-5": 0.9325,
+      "rank-10": 0.9571
+    },
+    "st": {
+      "mAP": 0.4904,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7423,
+      "rank-5": 0.9387,
+      "rank-10": 0.9632
+    }
+  },
+  "consensus-weighted mean": {
+    "plain": {
+      "mAP": 0.4917,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7485,
+      "rank-5": 0.9325,
+      "rank-10": 0.9632
+    },
+    "st": {
+      "mAP": 0.4909,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7423,
+      "rank-5": 0.9387,
+      "rank-10": 0.9632
+    }
+  },
+  "consensus-weighted (sharp)": {
+    "plain": {
+      "mAP": 0.4966,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7055,
+      "rank-5": 0.9202,
+      "rank-10": 0.9448
+    },
+    "st": {
+      "mAP": 0.4972,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.7178,
+      "rank-5": 0.9202,
+      "rank-10": 0.9448
+    }
+  },
+  "mean(drop s0)": {
+    "plain": {
+      "mAP": 0.4839,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.6687,
+      "rank-5": 0.908,
+      "rank-10": 0.9448
+    },
+    "st": {
+      "mAP": 0.4859,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.681,
+      "rank-5": 0.908,
+      "rank-10": 0.9448
+    }
+  },
+  "mining_diagnostic": {
+    "s0_k1": {
+      "links": 106,
+      "precision": 0.5472
+    },
+    "s0_k2": {
+      "links": 279,
+      "precision": 0.448
+    },
+    "s1_k1": {
+      "links": 98,
+      "precision": 0.4898
+    },
+    "s1_k2": {
+      "links": 273,
+      "precision": 0.4139
+    },
+    "s2_k1": {
+      "links": 103,
+      "precision": 0.5922
+    },
+    "s2_k2": {
+      "links": 273,
+      "precision": 0.4908
+    },
+    "s3_k1": {
+      "links": 96,
+      "precision": 0.6042
+    },
+    "s3_k2": {
+      "links": 265,
+      "precision": 0.5094
+    },
+    "s4_k1": {
+      "links": 102,
+      "precision": 0.5882
+    },
+    "s4_k2": {
+      "links": 271,
+      "precision": 0.5018
+    },
+    "ENSEMBLE-mean_k1": {
+      "links": 103,
+      "precision": 0.6019
+    },
+    "ENSEMBLE-mean_k2": {
+      "links": 287,
+      "precision": 0.5192
+    }
+  }
+}

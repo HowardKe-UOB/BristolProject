@@ -1,0 +1,57 @@
+{
+  "script": "coat_pattern_diag.py",
+  "tar": "2025Sep18.tar.gz",
+  "n_sampled": 400,
+  "seed": 1,
+  "n_classified": 400,
+  "n_skipped_tiny_foreground": 0,
+  "counts": {
+    "bicolor": 197,
+    "mostly_dark": 139,
+    "mostly_light": 64
+  },
+  "fractions": {
+    "bicolor": 0.4925,
+    "mostly_dark": 0.3475,
+    "mostly_light": 0.16
+  },
+  "per_camera": {
+    "66.128": {
+      "bicolor": 22,
+      "mostly_dark": 12,
+      "mostly_light": 10
+    },
+    "66.139": {
+      "bicolor": 17,
+      "mostly_dark": 34,
+      "mostly_light": 1
+    },
+    "66.33": {
+      "bicolor": 46,
+      "mostly_dark": 11,
+      "mostly_light": 17
+    },
+    "66.3": {
+      "bicolor": 36,
+      "mostly_dark": 5,
+      "mostly_light": 19
+    },
+    "66.1": {
+      "bicolor": 28,
+      "mostly_dark": 3,
+      "mostly_light": 6
+    },
+    "66.130": {
+      "bicolor": 13,
+      "mostly_dark": 62,
+      "mostly_light": 2
+    },
+    "66.133": {
+      "bicolor": 35,
+      "mostly_dark": 12,
+      "mostly_light": 9
+    }
+  },
+  "heuristic": "fg = |V-0.5|>0.12 or sat>0.08 on 64x64; bicolor iff >15% of fg bright (V>0.55) AND >15% dark (V<0.35)",
+  "note": "single-crop colour exposure; herd is bicolor-patched at animal level, but ~half of single crops expose one colour patch only"
+}

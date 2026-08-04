@@ -1,0 +1,94 @@
+{
+  "checkpoint_step": 1600,
+  "method": "bootstrap CC-space pseudo-labels",
+  "cosine": {
+    "plain": {
+      "mAP": 0.2796,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.5153,
+      "rank-5": 0.7362,
+      "rank-10": 0.8282
+    },
+    "st": {
+      "mAP": 0.2826,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.5092,
+      "rank-5": 0.7362,
+      "rank-10": 0.8282
+    }
+  },
+  "CC": {
+    "plain": {
+      "mAP": 0.3141,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.5583,
+      "rank-5": 0.7485,
+      "rank-10": 0.8098
+    },
+    "st": {
+      "mAP": 0.3167,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.5644,
+      "rank-5": 0.7546,
+      "rank-10": 0.816
+    }
+  },
+  "PCAW": {
+    "plain": {
+      "mAP": 0.2223,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.5583,
+      "rank-5": 0.773,
+      "rank-10": 0.8221
+    },
+    "st": {
+      "mAP": 0.2219,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.5521,
+      "rank-5": 0.773,
+      "rank-10": 0.8221
+    }
+  },
+  "CC-RR": {
+    "plain": {
+      "mAP": 0.3568,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.5337,
+      "rank-5": 0.7239,
+      "rank-10": 0.7423
+    },
+    "st": {
+      "mAP": 0.3596,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.5337,
+      "rank-5": 0.7239,
+      "rank-10": 0.7423
+    }
+  },
+  "RRF(CC,PCAW,CC-RR)": {
+    "plain": {
+      "mAP": 0.3547,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.5644,
+      "rank-5": 0.773,
+      "rank-10": 0.8528
+    },
+    "st": {
+      "mAP": 0.3571,
+      "n_query_scored": 163,
+      "n_gallery": 834,
+      "rank-1": 0.5644,
+      "rank-5": 0.7791,
+      "rank-10": 0.8528
+    }
+  }
+}

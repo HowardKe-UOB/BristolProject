@@ -1,0 +1,26 @@
+{
+  "DINOv2": {
+    "links": 352,
+    "prec": 0.56,
+    "dorsal_links": 296,
+    "dorsal_prec": 0.514
+  },
+  "Mega": {
+    "links": 300,
+    "prec": 0.64,
+    "dorsal_links": 243,
+    "dorsal_prec": 0.621
+  },
+  "fused 0.5/0.5": {
+    "links": 327,
+    "prec": 0.639,
+    "dorsal_links": 266,
+    "dorsal_prec": 0.605
+  },
+  "fused 0.4/0.6": {
+    "links": 318,
+    "prec": 0.651,
+    "dorsal_links": 258,
+    "dorsal_prec": 0.616
+  }
+}

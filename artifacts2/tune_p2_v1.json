@@ -1,0 +1,202 @@
+{
+  "k1=20 k2=6 rrfk=20 st=0": {
+    "mAP": 0.3474,
+    "n_query_scored": 943,
+    "n_gallery": 943,
+    "rank-1": 0.5536,
+    "rank-5": 0.7211,
+    "rank-10": 0.79
+  },
+  "k1=20 k2=6 rrfk=20 st=1": {
+    "mAP": 0.3484,
+    "n_query_scored": 943,
+    "n_gallery": 943,
+    "rank-1": 0.5546,
+    "rank-5": 0.72,
+    "rank-10": 0.79
+  },
+  "k1=20 k2=6 rrfk=40 st=0": {
+    "mAP": 0.345,
+    "n_query_scored": 943,
+    "n_gallery": 943,
+    "rank-1": 0.5472,
+    "rank-5": 0.7222,
+    "rank-10": 0.7858
+  },
+  "k1=20 k2=6 rrfk=40 st=1": {
+    "mAP": 0.3458,
+    "n_query_scored": 943,
+    "n_gallery": 943,
+    "rank-1": 0.5483,
+    "rank-5": 0.7222,
+    "rank-10": 0.7858
+  },
+  "k1=20 k2=10 rrfk=20 st=0": {
+    "mAP": 0.348,
+    "n_query_scored": 943,
+    "n_gallery": 943,
+    "rank-1": 0.5514,
+    "rank-5": 0.7306,
+    "rank-10": 0.7943
+  },
+  "k1=20 k2=10 rrfk=20 st=1": {
+    "mAP": 0.349,
+    "n_query_scored": 943,
+    "n_gallery": 943,
+    "rank-1": 0.5514,
+    "rank-5": 0.7296,
+    "rank-10": 0.7943
+  },
+  "k1=20 k2=10 rrfk=40 st=0": {
+    "mAP": 0.3453,
+    "n_query_scored": 943,
+    "n_gallery": 943,
+    "rank-1": 0.5472,
+    "rank-5": 0.7317,
+    "rank-10": 0.79
+  },
+  "k1=20 k2=10 rrfk=40 st=1": {
+    "mAP": 0.3463,
+    "n_query_scored": 943,
+    "n_gallery": 943,
+    "rank-1": 0.5472,
+    "rank-5": 0.7328,
+    "rank-10": 0.79
+  },
+  "k1=30 k2=6 rrfk=20 st=0": {
+    "mAP": 0.3475,
+    "n_query_scored": 943,
+    "n_gallery": 943,
+    "rank-1": 0.5536,
+    "rank-5": 0.7105,
+    "rank-10": 0.789
+  },
+  "k1=30 k2=6 rrfk=20 st=1": {
+    "mAP": 0.3487,
+    "n_query_scored": 943,
+    "n_gallery": 943,
+    "rank-1": 0.5536,
+    "rank-5": 0.7105,
+    "rank-10": 0.79
+  },
+  "k1=30 k2=6 rrfk=40 st=0": {
+    "mAP": 0.3441,
+    "n_query_scored": 943,
+    "n_gallery": 943,
+    "rank-1": 0.5483,
+    "rank-5": 0.7126,
+    "rank-10": 0.789
+  },
+  "k1=30 k2=6 rrfk=40 st=1": {
+    "mAP": 0.3451,
+    "n_query_scored": 943,
+    "n_gallery": 943,
+    "rank-1": 0.5483,
+    "rank-5": 0.7126,
+    "rank-10": 0.79
+  },
+  "k1=30 k2=10 rrfk=20 st=0": {
+    "mAP": 0.3481,
+    "n_query_scored": 943,
+    "n_gallery": 943,
+    "rank-1": 0.5546,
+    "rank-5": 0.7243,
+    "rank-10": 0.7911
+  },
+  "k1=30 k2=10 rrfk=20 st=1": {
+    "mAP": 0.3492,
+    "n_query_scored": 943,
+    "n_gallery": 943,
+    "rank-1": 0.5546,
+    "rank-5": 0.7243,
+    "rank-10": 0.7922
+  },
+  "k1=30 k2=10 rrfk=40 st=0": {
+    "mAP": 0.3448,
+    "n_query_scored": 943,
+    "n_gallery": 943,
+    "rank-1": 0.5472,
+    "rank-5": 0.7243,
+    "rank-10": 0.7932
+  },
+  "k1=30 k2=10 rrfk=40 st=1": {
+    "mAP": 0.3458,
+    "n_query_scored": 943,
+    "n_gallery": 943,
+    "rank-1": 0.5472,
+    "rank-5": 0.7243,
+    "rank-10": 0.7943
+  },
+  "k1=45 k2=6 rrfk=20 st=0": {
+    "mAP": 0.3491,
+    "n_query_scored": 943,
+    "n_gallery": 943,
+    "rank-1": 0.5578,
+    "rank-5": 0.7084,
+    "rank-10": 0.7932
+  },
+  "k1=45 k2=6 rrfk=20 st=1": {
+    "mAP": 0.3501,
+    "n_query_scored": 943,
+    "n_gallery": 943,
+    "rank-1": 0.5578,
+    "rank-5": 0.7084,
+    "rank-10": 0.7922
+  },
+  "k1=45 k2=6 rrfk=40 st=0": {
+    "mAP": 0.3453,
+    "n_query_scored": 943,
+    "n_gallery": 943,
+    "rank-1": 0.5504,
+    "rank-5": 0.7105,
+    "rank-10": 0.7922
+  },
+  "k1=45 k2=6 rrfk=40 st=1": {
+    "mAP": 0.3463,
+    "n_query_scored": 943,
+    "n_gallery": 943,
+    "rank-1": 0.5504,
+    "rank-5": 0.7105,
+    "rank-10": 0.7922
+  },
+  "k1=45 k2=10 rrfk=20 st=0": {
+    "mAP": 0.3483,
+    "n_query_scored": 943,
+    "n_gallery": 943,
+    "rank-1": 0.5483,
+    "rank-5": 0.719,
+    "rank-10": 0.7932
+  },
+  "k1=45 k2=10 rrfk=20 st=1": {
+    "mAP": 0.3493,
+    "n_query_scored": 943,
+    "n_gallery": 943,
+    "rank-1": 0.5472,
+    "rank-5": 0.7179,
+    "rank-10": 0.7932
+  },
+  "k1=45 k2=10 rrfk=40 st=0": {
+    "mAP": 0.3449,
+    "n_query_scored": 943,
+    "n_gallery": 943,
+    "rank-1": 0.5419,
+    "rank-5": 0.7232,
+    "rank-10": 0.7932
+  },
+  "k1=45 k2=10 rrfk=40 st=1": {
+    "mAP": 0.346,
+    "n_query_scored": 943,
+    "n_gallery": 943,
+    "rank-1": 0.5419,
+    "rank-5": 0.7232,
+    "rank-10": 0.7932
+  },
+  "P1_at_bestP2": {
+    "mAP": 0.5865,
+    "n_query_scored": 163,
+    "n_gallery": 834,
+    "rank-1": 0.8834,
+    "rank-5": 0.9571,
+    "rank-10": 0.9755
+  }
+}
