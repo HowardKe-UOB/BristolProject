@@ -24,3 +24,10 @@ figures/
 .claude/
 artifacts2/manifest.csv
 artifacts2/pairs_tier*.csv
+
+# --- data-adjacent strays ---
+2025Sep18.listing.txt
+_imgcache_paths.json
+*.err
+*.out
+paper_latex_overleaf_*/
