@@ -46,8 +46,15 @@ cat <<EOF
 
 == setup complete.
 
-Check the dataset is in place, then submit the first job:
+Submit through hpc/submit.sh, not sbatch directly: it supplies the account, the partition
+and the GPU type from hpc/env.sh.
 
-    ls -lh 2025Sep18.tar.gz 2025Sep18.listing.txt
-    sbatch hpc/01_signals_cache.sbatch
+    ls -lh 2025Sep18.tar.gz 2025Sep18.listing.txt   # dataset in place?
+    bash hpc/submit.sh hpc/00_smoke_gpu.sbatch      # 2 min: does torch work on a GPU node,
+                                                    # and does one training step fit?
+    bash hpc/submit.sh hpc/01_signals_cache.sbatch  # then start the ladder
+
+Run the smoke test first. A CUDA build newer than the node's driver installs without
+complaint and only fails at the first real GPU call, which would otherwise happen hours
+into a queued job.
 EOF
