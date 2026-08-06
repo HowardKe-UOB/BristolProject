@@ -51,6 +51,7 @@ all evaluation - is this repository.
 | `experiments/legacy/` | 3 superseded pre-ladder scripts, kept for provenance |
 | `artifacts2/` | 96 archived result JSONs plus 5 control CSVs - every number in the dissertation traces to one of these; see `artifacts2/README.md` |
 | `docs/reference/` | Per-stage fact sheets with file:line citations |
+| `hpc/` | Slurm job scripts for the University of Bristol BluePebble cluster: the whole ladder as seven submissions, with walltime-safe resume |
 
 Each folder carries its own README indexing every script in it with a one-line statement of
 what question it answers and which archived JSON holds its result.
@@ -67,6 +68,12 @@ pip install -r requirements.txt
 
 # 1. signals and splits
 python repro/build_phase1.py
+
+# 1b. the uint8 image cache every trainer mmaps (15 GB on disk, CPU, ~1 h)
+python common/vitb_unsup.py --build-cache --tar 2025Sep18.tar.gz
+
+# 1c. the frozen ViT-S features stage 1 seeds its proxies from (9 MB, GPU, ~15 min)
+python repro/make_vits_cache.py
 
 # 2. stage 1: five CAP seeds (GPU, ~40 min each), seeds 0-4
 python repro/vitb_unsup_cap.py --seed 0 --ckpt _vitb_cap_s0_ckpt.pt   # ... repeat for seeds 1-4

@@ -8,8 +8,17 @@ working directory, so `python repro\eval_sweep.py` is correct and `cd repro` the
 is not. Imports keep working from any location because each script prepends the repository
 root and the script folders to `sys.path` at start-up.
 
+Two prerequisites are built once before Stage 1 and are not optional: the trainers `mmap` the
+image cache and load the frozen ViT-S cache unconditionally, so a fresh clone must create both.
+
+```
+python common/vitb_unsup.py --build-cache --tar 2025Sep18.tar.gz   # 15 GB, CPU, ~1 h
+python repro/make_vits_cache.py                                    # 9 MB, GPU, ~15 min
+```
+
 | # | Script | Stage | What it does |
 |---|---|---|---|
+| 0 | `make_vits_cache.py` | Prerequisite | frozen DINOv2 ViT-S features per tracklet, read by Stage 1 |
 | 1 | `build_phase1.py` | Data | manifest, tracklets, mined free signals, frozen splits |
 | 2 | `vitb_unsup_cap.py` | Stage 1 | camera-aware proxy self-training, run with seeds 0-4 |
 | 3 | `eval_cap_ensemble.py` | Stage 2 | five-seed distance-ensemble teacher |
