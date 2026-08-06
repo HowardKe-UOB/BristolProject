@@ -1,0 +1,7 @@
+# Shell and job scripts must reach Linux with LF endings: a stray CR makes bash fail with
+# "$'\r': command not found", which on a cluster looks like a broken job rather than a
+# checkout artefact.
+*.sh        text eol=lf
+*.sbatch    text eol=lf
+*.py        text eol=lf
+*.md        text
