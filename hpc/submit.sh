@@ -28,6 +28,12 @@ else
     partition="${ACRC_CPU_PARTITION}"
 fi
 
+# Set ACRC_MAIL in hpc/env.local.sh to be told when a job starts, finishes or fails,
+# instead of polling squeue. Keep it out of the tracked file: it is a personal address.
+if [ -n "${ACRC_MAIL:-}" ]; then
+    extra+=(--mail-type=BEGIN,END,FAIL --mail-user="${ACRC_MAIL}")
+fi
+
 # The echo goes to stderr so that "J=$(bash hpc/submit.sh ... --parsable)" captures the
 # job id alone and job chaining keeps working.
 # The ${arr[@]+...} guard keeps an empty array from tripping "set -u" on bash 4.2, which is
