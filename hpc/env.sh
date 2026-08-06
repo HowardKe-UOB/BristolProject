@@ -27,6 +27,16 @@ export PYTHONUNBUFFERED=1
 # One thread pool per GPU job; oversubscription on shared nodes slows everyone down.
 export OMP_NUM_THREADS="${SLURM_CPUS_PER_TASK:-4}"
 
+# Site-local settings live in an untracked file, so "git pull" never fights with them and a
+# project account never reaches the public repository. Create it once:
+#     cat > hpc/env.local.sh <<'EOF'
+#     export ACRC_ACCOUNT="your_account"
+#     export ACRC_GPU_GRES="gpu:rtx_3090:1"
+#     EOF
+if [ -f "${REPO}/hpc/env.local.sh" ]; then
+    source "${REPO}/hpc/env.local.sh"
+fi
+
 # Guarded so these scripts also run on a machine with no module system (a laptop, say).
 if command -v module >/dev/null 2>&1; then
     module purge

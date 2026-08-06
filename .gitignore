@@ -69,3 +69,6 @@ __pycache__/
 # --- os droppings ----------------------------------------------------------------------------
 .DS_Store
 Thumbs.db
+
+# site-local cluster settings (account, GPU type): never committed
+hpc/env.local.sh
