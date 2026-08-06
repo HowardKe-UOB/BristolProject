@@ -47,5 +47,7 @@ for title, pattern, expected in groups:
 PY
 
 echo
-echo "== results written so far"
+echo "== artifacts2, most recently written first"
+echo "   (these start as the archived reference results that came with the clone;"
+echo "    your run replaces them as each stage finishes)"
 ls -1t artifacts2/*.json 2>/dev/null | head -5 | sed 's/^/  /'
