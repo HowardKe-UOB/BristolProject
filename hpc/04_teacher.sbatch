@@ -2,8 +2,8 @@
 #SBATCH --job-name=cow-teacher
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=8
-#SBATCH --mem=48G
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=40G
 #SBATCH --gres=gpu:1
 #SBATCH --time=03:00:00
 #SBATCH --output=logs/04_teacher_%j.out
