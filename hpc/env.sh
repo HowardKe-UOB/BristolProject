@@ -5,20 +5,26 @@ export ACRC_ACCOUNT="CHANGE_ME_project_account"
 export ACRC_GPU_PARTITION="gpu"
 export ACRC_CPU_PARTITION="compute"
 
-REPO="/user/work/${USER}/BristolProject"
+# Derived from this file's own location, so the repository can live anywhere.
+REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-# Caches live on /user/work: home quotas are too small for 15 GB of crops and HF weights.
-export HF_HOME="/user/work/${USER}/hf_cache"
-export TORCH_HOME="/user/work/${USER}/torch_cache"
+# Caches sit beside the code, which on BluePebble means /user/work: home quotas are far too
+# small for 15 GB of crops and several GB of pretrained weights. Both are in .gitignore.
+export HF_HOME="${REPO}/hf_cache"
+export TORCH_HOME="${REPO}/torch_cache"
 export TIMM_HOME="${TORCH_HOME}"
 export PYTHONUNBUFFERED=1
 
 # One thread pool per GPU job; oversubscription on shared nodes slows everyone down.
 export OMP_NUM_THREADS="${SLURM_CPUS_PER_TASK:-4}"
 
-module purge
-# Adjust to whatever `module avail` offers; a recent CUDA-enabled Python is all that is needed.
-module load languages/python/3.12.3 2>/dev/null || module load languages/anaconda3 2>/dev/null || true
+# Guarded so these scripts also run on a machine with no module system (a laptop, say).
+if command -v module >/dev/null 2>&1; then
+    module purge
+    # Adjust to whatever `module avail` offers; a recent CUDA-capable Python is all it needs.
+    module load languages/python/3.12.3 2>/dev/null \
+        || module load languages/anaconda3 2>/dev/null || true
+fi
 
 if [ -d "${REPO}/.venv" ]; then
     source "${REPO}/.venv/bin/activate"

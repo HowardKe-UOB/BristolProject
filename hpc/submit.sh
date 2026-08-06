@@ -24,5 +24,7 @@ else
     partition="${ACRC_CPU_PARTITION}"
 fi
 
-echo "sbatch --account=${ACRC_ACCOUNT} --partition=${partition} $* ${script}"
+# The echo goes to stderr so that "J=$(bash hpc/submit.sh ... --parsable)" captures the
+# job id alone and job chaining keeps working.
+echo "sbatch --account=${ACRC_ACCOUNT} --partition=${partition} $* ${script}" >&2
 sbatch --account="${ACRC_ACCOUNT}" --partition="${partition}" "$@" "${script}"
