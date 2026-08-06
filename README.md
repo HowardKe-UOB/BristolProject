@@ -99,6 +99,13 @@ python repro/validate_protocols.py
 Keep the seed numbers above: each one is written into its checkpoint filename, and
 `fuse_final.py` locates every model's saved embeddings by that name.
 
+**Reference environment.** Every reported number was produced on Windows 11 with Python
+3.12.10, torch 2.11.0+cu128, timm 1.0.27, numpy 2.4.3, scikit-learn 1.8.0 and Pillow 12.1.1,
+on a 24 GB RTX 5090 Laptop GPU. `requirements.txt` deliberately gives lower bounds rather
+than pins, because a cluster's driver dictates which CUDA build of torch can be installed;
+match the CUDA build to the machine and expect agreement within the seed variance rather
+than to the last decimal.
+
 Expect results within the reported seed variance (students +-0.03); every number can be
 checked against the archived JSONs in `artifacts2/`. Bit-exact reproduction of the
 dissertation's numbers requires the original checkpoints (48 checkpoints, ~51 GB - available
