@@ -18,13 +18,21 @@ if [ "${ACRC_ACCOUNT}" = "CHANGE_ME_project_account" ]; then
 fi
 
 # GPU jobs are the ones that ask for a gres; everything else goes to the CPU partition.
+# A --gres on the command line overrides the one in the script, which is how ACRC_GPU_GRES
+# pins the card type without editing seven files.
+extra=()
 if grep -q "gres=gpu" "${script}"; then
     partition="${ACRC_GPU_PARTITION}"
+    extra=(--gres="${ACRC_GPU_GRES:-gpu:1}")
 else
     partition="${ACRC_CPU_PARTITION}"
 fi
 
 # The echo goes to stderr so that "J=$(bash hpc/submit.sh ... --parsable)" captures the
 # job id alone and job chaining keeps working.
-echo "sbatch --account=${ACRC_ACCOUNT} --partition=${partition} $* ${script}" >&2
-sbatch --account="${ACRC_ACCOUNT}" --partition="${partition}" "$@" "${script}"
+# The ${arr[@]+...} guard keeps an empty array from tripping "set -u" on bash 4.2, which is
+# what login nodes of this vintage ship.
+echo "sbatch --account=${ACRC_ACCOUNT} --partition=${partition}" \
+     "${extra[@]+${extra[@]}}" "$@" "${script}" >&2
+sbatch --account="${ACRC_ACCOUNT}" --partition="${partition}" \
+       "${extra[@]+${extra[@]}}" "$@" "${script}"

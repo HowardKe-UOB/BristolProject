@@ -1,9 +1,18 @@
 # Shared environment for every BluePebble job. Sourced, not executed.
 # Fill in the two placeholders below once (see hpc/README.md for how to discover them).
 
-export ACRC_ACCOUNT="CHANGE_ME_project_account"
-export ACRC_GPU_PARTITION="gpu"
-export ACRC_CPU_PARTITION="compute"
+# The ":-" form means a value already in the environment wins, so a one-off run can override
+# any of these without editing the file:
+#     ACRC_GPU_GRES="gpu:a100:1" bash hpc/submit.sh hpc/03_cap.sbatch
+export ACRC_ACCOUNT="${ACRC_ACCOUNT:-CHANGE_ME_project_account}"
+export ACRC_GPU_PARTITION="${ACRC_GPU_PARTITION:-gpu}"
+export ACRC_CPU_PARTITION="${ACRC_CPU_PARTITION:-compute}"
+
+# Which GPU to ask for. The default batch (--P 12 --K 4 --T 2, i.e. 96 crops of 518x518
+# through ViT-B) needs roughly 20 GB, so an 11 GB RTX 2080 Ti runs out of memory, and a bare
+# "gpu:1" lets the scheduler hand you one of those. Name the type instead. Exact strings:
+#     sinfo -N -p "${ACRC_GPU_PARTITION}" -o "%N %G" | sort -u -k2
+export ACRC_GPU_GRES="${ACRC_GPU_GRES:-gpu:1}"
 
 # Derived from this file's own location, so the repository can live anywhere.
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
