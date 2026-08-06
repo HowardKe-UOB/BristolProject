@@ -42,52 +42,63 @@ all evaluation - is this repository.
 
 | Path | Contents |
 |---|---|
-| `cowreid/` | Library: manifest/tracklets/topology (data), pair mining + OT + constrained clustering (signals), encoder/losses/batching (training), splits/eval/ST-mask (evaluation) |
-| `build_phase1.py` | Phase-1 driver: manifest -> tracklets -> mined signals -> splits |
-| `vitb_unsup.py` | Core trainer infrastructure (image cache, chunked checkpoint-resume) |
-| `vitb_unsup_cap.py` | Stage 1: camera-aware proxy self-training (run with 5 seeds) |
-| `eval_cap_ensemble.py` | Stage 2: five-seed distance-ensemble teacher |
-| `make_distill_labels.py` | Stage 2->3: frozen label set (intra clusters + pairwise links) |
-| `vitb_unsup_distill.py`, `vitb_unsup_deploy.py`, `vitb_unsup_hardcl2.py` | Stage 3: distilled students (holdout / deployment / hard cannot-link) |
-| `vitb_unsup_mega.py` | Stage 4: MegaDescriptor students |
-| `fuse_hetero.py`, `fuse_final.py`, `ensemble_search.py` | Stage 4: heterogeneous fusion and final operating points |
-| `eval_sweep.py` | Three-protocol evaluation (also home of `champ_dist`, imported widely) |
-| `artifacts2/` | 96 archived result JSONs - every number in the dissertation traces to one of these |
+| `cowreid/` | Library, imported by everything: manifest/tracklets/topology (data), pair mining + OT + constrained clustering (signals), encoder/losses/batching (training), splits/eval/ST-mask (evaluation) |
+| `repro/` | **The 15 scripts that produce the headline numbers**, in run order - see `repro/README.md` |
+| `common/` | 9 shared modules imported by the pipeline and the experiments: image cache and trainer core, IICS fine-tuning, label-free inference levers, ST evaluation helpers |
+| `experiments/ablations/` | 33 scripts, one per claim: alternatives that were tried, including the negative results reported in Chapter 5 |
+| `experiments/diagnostics/` | 18 audits that train nothing and establish one fact each (coat pattern, per-camera errors, pseudo-label precision) |
+| `experiments/figure_scripts/` | 3 dissertation figure generators |
+| `experiments/legacy/` | 3 superseded pre-ladder scripts, kept for provenance |
+| `artifacts2/` | 96 archived result JSONs plus 5 control CSVs - every number in the dissertation traces to one of these; see `artifacts2/README.md` |
 | `docs/reference/` | Per-stage fact sheets with file:line citations |
-| remaining scripts | Diagnostics, ablations, negative-result experiments (14 failed families), figure generation |
+
+Each folder carries its own README indexing every script in it with a one-line statement of
+what question it answers and which archived JSON holds its result.
 
 ## Reproducing the pipeline
+
+Roughly half a day on one 24 GB GPU. Run every command **from the repository root**: data and
+artifact paths are relative to the working directory. Pretrained backbones download
+automatically on first use.
 
 ```
 # 0. place 2025Sep18.tar.gz + 2025Sep18.listing.txt in the repo root
 pip install -r requirements.txt
 
 # 1. signals and splits
-python build_phase1.py
+python repro/build_phase1.py
 
-# 2. stage 1: five CAP seeds (GPU, ~40 min each)
-python vitb_unsup_cap.py --seed 0 --ckpt _vitb_cap_s0_ckpt.pt   # ... repeat for seeds 1-4
+# 2. stage 1: five CAP seeds (GPU, ~40 min each), seeds 0-4
+python repro/vitb_unsup_cap.py --seed 0 --ckpt _vitb_cap_s0_ckpt.pt   # ... repeat for seeds 1-4
 
 # 3. stage 2: ensemble teacher + frozen labels
-python eval_cap_ensemble.py
-python make_distill_labels.py
+python repro/eval_cap_ensemble.py
+python repro/make_distill_labels.py
 
-# 4. stage 3: students (3 seeds each)
-python vitb_unsup_deploy.py ...
-python vitb_unsup_hardcl2.py ...
+# 4. stage 3: students, 3 seeds each (deploy 10-12, hard cannot-link 16-18)
+python repro/vitb_unsup_deploy.py  --seed 10 --ckpt _vitb_dep_s10_ckpt.pt
+python repro/vitb_unsup_hardcl2.py --seed 16 --ckpt _vitb_hc2_s16_ckpt.pt
 
-# 5. stage 4: MegaDescriptor students + fusion
-python vitb_unsup_mega.py ...
-python fuse_final.py
+# 5. stage 4: MegaDescriptor students (seeds 40-42) + fusion
+python repro/vitb_unsup_mega.py --seed 40 --ckpt _vitb_mega_s40_ckpt.pt
+python repro/fuse_hetero.py
+python repro/fuse_final.py
 
 # 6. evaluation
-python eval_sweep.py ...
+python repro/eval_sweep.py ...
+python repro/validate_protocols.py
 ```
 
-Expect results within the reported seed variance (students +-0.03);
-bit-exact reproduction of the dissertation's numbers requires the original
-checkpoints (48 checkpoints, ~51 GB - available on request). All fusion and
-evaluation steps run on CPU from saved embeddings.
+Keep the seed numbers above: each one is written into its checkpoint filename, and
+`fuse_final.py` locates every model's saved embeddings by that name.
+
+Expect results within the reported seed variance (students +-0.03); every number can be
+checked against the archived JSONs in `artifacts2/`. Bit-exact reproduction of the
+dissertation's numbers requires the original checkpoints (48 checkpoints, ~51 GB - available
+on request). All fusion and evaluation steps run on CPU from saved embeddings.
+
+Nothing under `experiments/` is needed for the headline result. Those scripts are the
+evidence for individual claims: one script per ablation, per negative result and per audit.
 
 ## Citation
 
