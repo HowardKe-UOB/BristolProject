@@ -24,6 +24,7 @@ export HF_HUB_OFFLINE=1
 # that starts before its input exists otherwise dies in a Python traceback hours later.
 test -e "artifacts2/distill_labels_v1.json" || { echo "missing prerequisite: artifacts2/distill_labels_v1.json (run hpc/04_teacher.sbatch first)" >&2; exit 1; }
 test -e "_imgcache.npy" || { echo "missing prerequisite: _imgcache.npy (run hpc/01_signals_cache.sbatch first)" >&2; exit 1; }
+test -e "_vitb_dst_emb_v4.npz" || { echo "missing prerequisite: _vitb_dst_emb_v4.npz (run hpc/05a then 05b first)" >&2; exit 1; }
 
 case "${SLURM_ARRAY_TASK_ID}" in
     0|1|2) SCRIPT="repro/vitb_unsup_deploy.py";  SEED=$((10 + SLURM_ARRAY_TASK_ID));     TAG="dep" ;;

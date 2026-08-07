@@ -15,6 +15,8 @@ _sys.path[:0] = [str(_R), str(_R / "repro"), str(_R / "common")] + [
 import json
 from collections import defaultdict
 
+import os
+
 import numpy as np
 
 from cowreid import CameraTopology, Manifest, build_tracklets
@@ -48,21 +50,35 @@ def main():
     banks = {}
     ref_ids = None
     for name, npz in SOURCES.items():
+        # The act bank needs human clicks and the extended banks need extra training
+        # runs; a fresh zero-human reproduction has neither. Skip loudly, never crash.
+        if not os.path.exists(npz):
+            print(f"[skip] {npz} not found -> combos using '{name}' are dropped", flush=True)
+            continue
         ids, ms = load(npz)
         if ref_ids is None:
             ref_ids = ids
         assert ids == ref_ids, f"{name} id order mismatch"
         banks[name] = ms
     ids = ref_ids
+    if "dino6" not in banks:
+        raise SystemExit("dino6 bank missing; run eval_sweep.py on the six students "
+                         "first (see hpc/06b_embed_sweep.sbatch)")
     print({k: len(v) for k, v in banks.items()}, flush=True)
 
-    combos = {
-        "dino6 (zero-human ref)": banks["dino6"],
-        "mega3": banks["mega3"],
-        "dino6+mega3": banks["dino6"] + banks["mega3"],
-        "dino6+mega3 (mega x2)": banks["dino6"] + banks["mega3"] * 2,
-        "dino6+mega3+act(clicks)": banks["dino6"] + banks["mega3"] + banks["act"],
+    all_combos = {
+        "dino6 (zero-human ref)": ["dino6"],
+        "mega3": ["mega3"],
+        "dino6+mega3": ["dino6", "mega3"],
+        "dino6+mega3 (mega x2)": ["dino6", "mega3", "mega3"],
+        "dino6+mega3+act(clicks)": ["dino6", "mega3", "act"],
     }
+    combos = {}
+    for cname, parts in all_combos.items():
+        if any(p not in banks for p in parts):
+            print(f"[skip] combo '{cname}' (missing bank)", flush=True)
+            continue
+        combos[cname] = sum((banks[p] for p in parts), [])
 
     def eval_all(embs, name, cluster=False):
         lab = None
@@ -129,6 +145,9 @@ def main():
         report[name] = eval_all(embs, name, cluster=False)
     print("  --- with cluster rerank (on fused distance) ---", flush=True)
     for name in ("dino6+mega3", "dino6+mega3+act(clicks)"):
+        if name not in combos:
+            print(f"[skip] cluster rerank for '{name}' (combo absent)", flush=True)
+            continue
         report[name + " +clust"] = eval_all(combos[name], name, cluster=True)
 
     with open("artifacts2/fuse_hetero_v1.json", "w", encoding="utf-8") as fh:

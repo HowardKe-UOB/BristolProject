@@ -12,6 +12,7 @@ _sys.path[:0] = [str(_R), str(_R / "repro"), str(_R / "common")] + [
     str(d) for d in (_R / "experiments").iterdir() if d.is_dir() and not d.name.startswith(("_", "."))]
 
 import json
+import os
 from collections import defaultdict
 
 import numpy as np
@@ -44,11 +45,21 @@ def main():
 
     ids = None; models = {}
     for npz, names in SRC:
+        # A fresh reproduction has only the core-ladder models; the extended pool
+        # (megaft / mega2 / sup2 variants) may be absent. Skip loudly, never crash:
+        # the greedy search then runs over whatever pool is present.
+        if not os.path.exists(npz):
+            print(f"[skip] {npz} not found -> pool loses {names}", flush=True)
+            continue
         d = np.load(npz, allow_pickle=True)
         if ids is None:
             ids = list(d["ids"])
         for name, k in zip(names, [k for k in d.files if k != "ids"]):
             models[name] = d[k]
+    if not models:
+        raise SystemExit("no embedding files found; run eval_sweep.py on the trained "
+                         "checkpoints first (see hpc/06b_embed_sweep.sbatch)")
+    print(f"[pool] {len(models)} models: {sorted(models)}", flush=True)
 
     # protocol query/gallery sets
     g1 = [EvalItem(t, gt[t], by_tid[t].camera) for t in ids if by_tid[t].camera != OBL]
@@ -139,6 +150,10 @@ def main():
     }
     print("\nkey combos (plain / +cluster):", flush=True)
     for name, names in combos.items():
+        missing = [n for n in names if n not in models]
+        if missing:
+            print(f"  {name:34s}: skipped (missing {missing})", flush=True)
+            continue
         for clu in (False, True):
             p1, dr, p2 = score(names, clu)
             k = name + ("+clust" if clu else "")

@@ -82,17 +82,25 @@ python repro/vitb_unsup_cap.py --seed 0 --ckpt _vitb_cap_s0_ckpt.pt   # ... repe
 python repro/eval_cap_ensemble.py
 python repro/make_distill_labels.py
 
-# 4. stage 3: students, 3 seeds each (deploy 10-12, hard cannot-link 16-18)
-python repro/vitb_unsup_deploy.py  --seed 10 --ckpt _vitb_dep_s10_ckpt.pt
-python repro/vitb_unsup_hardcl2.py --seed 16 --ckpt _vitb_hc2_s16_ckpt.pt
+# 4a. stage 3, first rung: five holdout students (seeds 5-9; 5-6 use k=1 links, 7-9 k=2)
+python repro/vitb_unsup_distill.py --seed 5 --link-k 1 --ckpt _vitb_dst_s5_ckpt.pt
+python repro/vitb_unsup_distill.py --seed 7 --link-k 2 --ckpt _vitb_dst_s7_ckpt.pt   # ... 6,8,9
 
-# 5. stage 4: MegaDescriptor students (seeds 40-42) + fusion
-python repro/vitb_unsup_mega.py --seed 40 --ckpt _vitb_mega_s40_ckpt.pt
+# 4b. embed them into the next rung's mining space (_vitb_dst_emb_v4.npz)
+python experiments/ablations/fuse_student.py     --students _vitb_dst_s5_ckpt.pt _vitb_dst_s6_ckpt.pt _vitb_dst_s7_ckpt.pt                _vitb_dst_s8_ckpt.pt _vitb_dst_s9_ckpt.pt --out-npz _vitb_dst_emb_v4.npz
+
+# 4c. stage 3, second rung: deployment students (they mine k=2 links in that space)
+python repro/vitb_unsup_deploy.py  --seed 10 --ckpt _vitb_dep_s10_ckpt.pt   # ... 11,12
+python repro/vitb_unsup_hardcl2.py --seed 16 --ckpt _vitb_hc2_s16_ckpt.pt   # ... 17,18
+
+# 5. stage 4: MegaDescriptor students (seeds 40-42; same mining space)
+python repro/vitb_unsup_mega.py --seed 40 --ckpt _vitb_mega_s40_ckpt.pt     # ... 41,42
+
+# 6. embed the trained students once, then fuse and evaluate on CPU
+python repro/eval_sweep.py --tag final_zerohuman --ckpts _vitb_dep_s1{0,1,2}_ckpt.pt _vitb_hc2_s1{6,7,8}_ckpt.pt
+python repro/eval_sweep.py --tag mega_trio --backbone mega --ckpts _vitb_mega_s4{0,1,2}_ckpt.pt
 python repro/fuse_hetero.py
 python repro/fuse_final.py
-
-# 6. evaluation
-python repro/eval_sweep.py ...
 python repro/validate_protocols.py
 ```
 

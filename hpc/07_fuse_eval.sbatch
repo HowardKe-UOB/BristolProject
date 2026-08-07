@@ -15,6 +15,10 @@ set -euo pipefail
 mkdir -p logs
 source hpc/env.sh
 
+for f in _sweep_final_zerohuman_emb.npz _sweep_mega_trio_emb.npz _vitb_dst_emb_v4.npz; do
+    test -e "$f" || { echo "missing prerequisite: $f (run hpc/06b_embed_sweep.sbatch first)" >&2; exit 1; }
+done
+
 echo "== keeping the committed reference results so your run can be compared against them"
 stamp="$(date +%Y%m%d_%H%M)"
 mkdir -p "artifacts2_reference_${stamp}"
