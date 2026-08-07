@@ -12,9 +12,11 @@ squeue -u "${USER}" --start -o "%.10i %.10P %.12j %.8T %.20S %.12r" || true
 
 echo
 echo "== how many pending jobs outrank each of mine"
-for jid in $(squeue -h -u "${USER}" -t PD -o "%i"); do
-    part=$(squeue -h -j "${jid}" -o "%P")
-    mine=$(squeue -h -j "${jid}" -o "%Q")
+# %F is the array job's base id: "%i" yields 18291306_[1-4], which squeue -j rejects.
+for jid in $(squeue -h -u "${USER}" -t PD -o "%F" | sort -u); do
+    part=$(squeue -h -j "${jid}" -o "%P" | head -1)
+    mine=$(squeue -h -j "${jid}" -o "%Q" | head -1)
+    [ -z "${mine}" ] && continue
     ahead=$(squeue -h -p "${part}" -t PD -o "%Q" | awk -v m="${mine}" '$1 > m' | wc -l)
     printf "  job %-10s partition %-10s priority %-10s  %s pending jobs ahead\n" \
         "${jid}" "${part}" "${mine}" "${ahead}"
