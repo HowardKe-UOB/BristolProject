@@ -28,6 +28,33 @@ MegaDescriptor via Hugging Face) are downloaded on first use. Run `setup_env.sh`
 **3. Budget about 80 GB of disk on `/user/work`.** The image cache is 15 GB, the
 checkpoints roughly 51 GB across the full ladder, extracted crops another 0.3 GB.
 
+## Which cards actually work here
+
+Measured, not assumed. The smoke test was run against each type.
+
+| Card | Memory | Verdict |
+|---|---|---|
+| A100 (`gpu:a100:1`) | 20.9 GB as a `1g.20gb` MIG slice | works; 18.8 GB peak leaves 2.2 GB spare |
+| RTX 3090 (`gpu:rtx_3090:1`) | 24 GB | fits, one node of 8 cards |
+| RTX 2080 Ti (`gpu:rtx_2080:1`) | 11 GB | too small to train; fine for step 02, which peaks at 0.8 GB |
+| V100 (`gpu:v100:1` / `gpu:V100:1`) | **32 GB, and still unusable** | see below |
+
+The V100s have ample memory but are compute capability 7.0, and the torch this cluster
+resolves (2.13.0+cu130) ships kernels only for 7.5 and above. Every GPU call fails with
+`no kernel image is available for execution on the device`. To use them, reinstall torch
+against an older CUDA build inside `.venv`, which also keeps A100 and RTX support:
+
+```
+pip install --force-reinstall torch==2.13.0 --index-url https://download.pytorch.org/whl/cu126
+```
+
+That is worth doing only if the A100 queue is long: it unlocks nine 32 GB cards and removes
+the tight 2.2 GB headroom, at the cost of re-resolving the environment mid-project.
+
+Note also that this site spells the same card two ways, `gpu:V100:3` on bp1-gpu036 and
+bp1-gpu040 but `gpu:v100:3` on bp1-gpu037. Gres names are case-sensitive, so a request for
+one spelling can never be scheduled on the other nodes.
+
 ## One-time setup (login node)
 
 ```bash
