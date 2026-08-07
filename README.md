@@ -43,9 +43,9 @@ all evaluation - is this repository.
 | Path | Contents |
 |---|---|
 | `cowreid/` | Library, imported by everything: manifest/tracklets/topology (data), pair mining + OT + constrained clustering (signals), encoder/losses/batching (training), splits/eval/ST-mask (evaluation) |
-| `repro/` | **The 19 scripts that produce the headline numbers**, in run order (core ladder plus the extension rungs behind the 0.945 selection) - see `repro/README.md` |
+| `repro/` | **The 20 scripts that produce the headline numbers**, in run order (core ladder plus the extension rungs behind the 0.945 selection) - see `repro/README.md` |
 | `common/` | 9 shared modules imported by the pipeline and the experiments: image cache and trainer core, IICS fine-tuning, label-free inference levers, ST evaluation helpers |
-| `experiments/ablations/` | 30 scripts, one per claim: alternatives that were tried, including the negative results reported in Chapter 5 |
+| `experiments/ablations/` | 29 scripts, one per claim: alternatives that were tried, including the negative results reported in Chapter 5 |
 | `experiments/diagnostics/` | 18 audits that train nothing and establish one fact each (coat pattern, per-camera errors, pseudo-label precision) |
 | `experiments/figure_scripts/` | 3 dissertation figure generators |
 | `experiments/legacy/` | 3 superseded pre-ladder scripts, kept for provenance |
@@ -87,7 +87,7 @@ python repro/vitb_unsup_distill.py --seed 5 --link-k 1 --ckpt _vitb_dst_s5_ckpt.
 python repro/vitb_unsup_distill.py --seed 7 --link-k 2 --ckpt _vitb_dst_s7_ckpt.pt   # ... 6,8,9
 
 # 4b. embed them into the next rung's mining space (_vitb_dst_emb_v4.npz)
-python experiments/ablations/fuse_student.py     --students _vitb_dst_s5_ckpt.pt _vitb_dst_s6_ckpt.pt _vitb_dst_s7_ckpt.pt                _vitb_dst_s8_ckpt.pt _vitb_dst_s9_ckpt.pt --out-npz _vitb_dst_emb_v4.npz
+python repro/fuse_student.py     --students _vitb_dst_s5_ckpt.pt _vitb_dst_s6_ckpt.pt _vitb_dst_s7_ckpt.pt                _vitb_dst_s8_ckpt.pt _vitb_dst_s9_ckpt.pt --out-npz _vitb_dst_emb_v4.npz
 
 # 4c. stage 3, second rung: deployment students (they mine k=2 links in that space)
 python repro/vitb_unsup_deploy.py  --seed 10 --ckpt _vitb_dep_s10_ckpt.pt   # ... 11,12

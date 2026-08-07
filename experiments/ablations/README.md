@@ -11,7 +11,6 @@ Run everything from the repository root, e.g. `python experiments\ablations\clus
 | `final_best.py` | Reports the greedy-selected 4-model set {hc16, mega40, hc18, megaft50} vs the all-10 no-selection stack, each with and without cluster rerank (10-model pool, superseded by fuse_final). | final_best_v1.json |
 | `fuse_mega2.py` | Quick check of whether adding the strong n_stage=2 Mega student (mega2_s60) improves the existing zero-human fusion combos on P1/dorsal/P2. | fuse_mega2_v1.json |
 | `fuse_specialists.py` | Specialist fusion negative-result test: combines the P1-strong baseline student s8 with the dorsal-strong hardCL student s15 (and the trio) across all protocols. | fuse_specialists_v1.json |
-| `fuse_student.py` | Embeds new distilled student checkpoints with flip-TTA into _vitb_dst_emb_*.npz and tests whether adding them (x1 / x2 weight) to the 5-seed CAP ensemble helps. | fuse_student_v1.json |
 | `fuse_supervised.py` | Fuses the GT-supervised twin with the zero-human heterogeneous ensemble to measure the fusion ceiling and whether the label-free oblique strength lifts the supervised model. | fuse_supervised_v1.json |
 | `hub_relay.py` | Training-free two-hop retrieval that relays dorsal-dorsal matching through oblique-camera hub tracklets, fused with the champion distance via RRF/gating/QE. | hub_relay_v1.json |
 | `label_efficiency.py` | Semi-supervised label-efficiency curve: enrolls a fraction of identities with GT labels, trains the finetune+IICS pipeline multi-seed, and reports rank-1 vs labeling fraction. | - |

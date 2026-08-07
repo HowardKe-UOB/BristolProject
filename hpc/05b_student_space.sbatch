@@ -24,7 +24,7 @@ done
 
 nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
 
-python experiments/ablations/fuse_student.py \
+python repro/fuse_student.py \
     --students _vitb_dst_s5_ckpt.pt _vitb_dst_s6_ckpt.pt _vitb_dst_s7_ckpt.pt \
                _vitb_dst_s8_ckpt.pt _vitb_dst_s9_ckpt.pt \
     --out-npz _vitb_dst_emb_v4.npz \

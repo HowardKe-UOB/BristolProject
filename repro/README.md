@@ -24,6 +24,7 @@ python repro/make_vits_cache.py                                    # 9 MB, GPU, 
 | 3 | `eval_cap_ensemble.py` | Stage 2 | five-seed distance-ensemble teacher |
 | 4 | `make_distill_labels.py` | Stage 2 to 3 | frozen label set: intra-camera clusters + pairwise cross-camera links |
 | 5 | `vitb_unsup_distill.py` | Stage 3 | holdout students (seeds 5-9) |
+| 5b | `fuse_student.py` | Stage 3 | embeds the holdout students into `_vitb_dst_emb_v4.npz`, the next rung's mining space |
 | 6 | `vitb_unsup_deploy.py` | Stage 3 | deployment students (seeds 10-12) |
 | 7 | `vitb_unsup_hardcl2.py` | Stage 3 | hard cannot-link students (seeds 16-18), the Stage-3 winner |
 | 8 | `vitb_unsup_mega.py` | Stage 4 | MegaDescriptor students (seeds 40-42) |
