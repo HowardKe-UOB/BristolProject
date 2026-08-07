@@ -24,6 +24,11 @@ export TORCH_HOME="${REPO}/torch_cache"
 export TIMM_HOME="${TORCH_HOME}"
 export PYTHONUNBUFFERED=1
 
+# On a partitioned A100 the recipe peaks at 18.8 GB inside a 20.9 GB MIG slice, so there is
+# little room for the allocator to waste on fragmentation. Expandable segments let it grow
+# and reuse one region rather than stranding memory in fixed-size blocks.
+export PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True"
+
 # One thread pool per GPU job; oversubscription on shared nodes slows everyone down.
 export OMP_NUM_THREADS="${SLURM_CPUS_PER_TASK:-4}"
 
