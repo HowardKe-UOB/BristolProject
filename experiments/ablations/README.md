@@ -7,7 +7,7 @@ Run everything from the repository root, e.g. `python experiments\ablations\clus
 | Script | What it answers | Result archived as |
 |---|---|---|
 | `cluster_rerank_guard.py` | Applies the P2-winning cluster-consistency rerank (DBSCAN eps=0.5, bonus 0.05) to P1 and the per-camera sweep to check it generalises and never hurts. | cluster_rerank_guard_v1.json |
-| `eval_phase3.py` | Frozen off-the-shelf feature baseline (colour histogram / DINOv2 / random) on three protocols - the lower bound any trained encoder must beat. | eval_phase3.json |
+| `eval_phase3.py` | The no-training floors: random / colour histogram / frozen DINOv2 ViT-S (`dino`) / frozen ViT-B, the trained backbone (`dinob`), on three protocols. The eight-frame reruns quoted in Chapter 5 are the `eval_phase3_*_f8_v1.json` archives. | eval_phase3*.json |
 | `final_best.py` | Reports the greedy-selected 4-model set {hc16, mega40, hc18, megaft50} vs the all-10 no-selection stack, each with and without cluster rerank (10-model pool, superseded by fuse_final). | final_best_v1.json |
 | `fuse_mega2.py` | Quick check of whether adding the strong n_stage=2 Mega student (mega2_s60) improves the existing zero-human fusion combos on P1/dorsal/P2. | fuse_mega2_v1.json |
 | `fuse_specialists.py` | Specialist fusion negative-result test: combines the P1-strong baseline student s8 with the dorsal-strong hardCL student s15 (and the trio) across all protocols. | fuse_specialists_v1.json |

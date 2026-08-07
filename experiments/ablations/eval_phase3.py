@@ -53,7 +53,10 @@ def main():
     ap.add_argument("--listing", required=True)
     ap.add_argument("--tar", required=True)
     ap.add_argument("--work", default="_crops_eval")
-    ap.add_argument("--features", choices=["color", "dino", "random"], default="color")
+    # "dino" is ViT-S/14 (the phase-1 seed extractor); "dinob" is ViT-B/14, the very
+    # backbone the training ladder adapts -- its frozen score is the floor quoted against
+    # the supervised 0.969 in Chapter 5.
+    ap.add_argument("--features", choices=["color", "dino", "dinob", "random"], default="color")
     ap.add_argument("--frames-per-tracklet", type=int, default=6)
     ap.add_argument("--holdout-camera", default="66.130")
     ap.add_argument("--out", default="artifacts2/eval_phase3.json")
@@ -89,6 +92,8 @@ def main():
                                for p in sample_frames(index[t], args.frames_per_tracklet)})
         extract_paths(args.tar, needed_paths, args.work)
         extractor = (ColorHistogramExtractor() if args.features == "color"
+                     else DinoV2Extractor(model_name="vit_base_patch14_dinov2.lvd142m")
+                     if args.features == "dinob"
                      else DinoV2Extractor())
         fs = CachedFeatureStore(ImageLoader(root=args.work, tar_path=args.tar), extractor)
         emb = embed_tracklets(needed_tids, index, fs, args.frames_per_tracklet)
