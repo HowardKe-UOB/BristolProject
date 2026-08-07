@@ -27,6 +27,7 @@ import glob, os, torch
 
 groups = [
     ("Stage 1  CAP",       "_vitb_cap_s*_ckpt.pt",  5),
+    ("Stage 3  holdout",   "_vitb_dst_s[5-9]_ckpt.pt", 5),
     ("Stage 3  deploy",    "_vitb_dep_s1[0-2]_ckpt.pt", 3),
     ("Stage 3  hard-CL",   "_vitb_hc2_s1[6-8]_ckpt.pt", 3),
     ("Stage 4  Mega",      "_vitb_mega_s4[0-2]_ckpt.pt", 3),
