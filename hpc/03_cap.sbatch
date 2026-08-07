@@ -22,6 +22,11 @@ source hpc/env.sh
 source hpc/train_loop.sh
 export HF_HUB_OFFLINE=1
 
+# Fail fast and legibly if a previous stage has not produced its output: a queued job
+# that starts before its input exists otherwise dies in a Python traceback hours later.
+test -e "_imgcache.npy" || { echo "missing prerequisite: _imgcache.npy (run hpc/01_signals_cache.sbatch first)" >&2; exit 1; }
+test -e "dino_clip_feats_v1.npz" || { echo "missing prerequisite: dino_clip_feats_v1.npz (run hpc/02_vits_cache.sbatch first)" >&2; exit 1; }
+
 SEED="${SLURM_ARRAY_TASK_ID}"
 CKPT="_vitb_cap_s${SEED}_ckpt.pt"
 JOB_SECONDS=$((12 * 3600))

@@ -19,6 +19,11 @@ source hpc/env.sh
 source hpc/train_loop.sh
 export HF_HUB_OFFLINE=1
 
+# Fail fast and legibly if a previous stage has not produced its output: a queued job
+# that starts before its input exists otherwise dies in a Python traceback hours later.
+test -e "artifacts2/distill_labels_v1.json" || { echo "missing prerequisite: artifacts2/distill_labels_v1.json (run hpc/04_teacher.sbatch first)" >&2; exit 1; }
+test -e "_imgcache.npy" || { echo "missing prerequisite: _imgcache.npy (run hpc/01_signals_cache.sbatch first)" >&2; exit 1; }
+
 SEED=$((40 + SLURM_ARRAY_TASK_ID))
 CKPT="_vitb_mega_s${SEED}_ckpt.pt"
 JOB_SECONDS=$((12 * 3600))
