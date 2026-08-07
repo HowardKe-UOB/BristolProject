@@ -15,7 +15,6 @@ Run everything from the repository root, e.g. `python experiments\ablations\clus
 | `hub_relay.py` | Training-free two-hop retrieval that relays dorsal-dorsal matching through oblique-camera hub tracklets, fused with the champion distance via RRF/gating/QE. | hub_relay_v1.json |
 | `label_efficiency.py` | Semi-supervised label-efficiency curve: enrolls a fraction of identities with GT labels, trains the finetune+IICS pipeline multi-seed, and reports rank-1 vs labeling fraction. | - |
 | `mega_frozen.py` | Zero-training evaluation of frozen MegaDescriptor-L-384 features under the champion inference recipe, as the decision gate for a full Mega retrain. | mega_frozen_v1.json |
-| `mega_search.py` | Greedy forward ensemble selection over the full 21-model zero-human model zoo, per protocol (P1 / dorsal / P2), with cached per-model champion distances. | mega_search_v1.json |
 | `mega_search2.py` | Pushes P2/dorsal further with greedy selection plus DBSCAN cluster-consistency reranking and weighted unions of the best sets. | mega_search2_v1.json |
 | `megadino_frozen.py` | Evaluates the frozen animal-domain MegaDescriptor-DINOv2 ViT-L@518 backbone to isolate whether the s70 run collapsed from the backbone or from training divergence. | - |
 | `new_levers2.py` | Round-2 label-free inference recipe: combines PCA-whitening, per-camera whitening, tuned CA-Jaccard and RRF, and checks the same recipe on supervised embeddings. | new_levers2_v1.json |

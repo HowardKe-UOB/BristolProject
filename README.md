@@ -43,9 +43,9 @@ all evaluation - is this repository.
 | Path | Contents |
 |---|---|
 | `cowreid/` | Library, imported by everything: manifest/tracklets/topology (data), pair mining + OT + constrained clustering (signals), encoder/losses/batching (training), splits/eval/ST-mask (evaluation) |
-| `repro/` | **The 20 scripts that produce the headline numbers**, in run order (core ladder plus the extension rungs behind the 0.945 selection) - see `repro/README.md` |
+| `repro/` | **The 21 scripts that produce the headline numbers**, in run order (core ladder plus the extension rungs behind the 0.945 selection) - see `repro/README.md` |
 | `common/` | 9 shared modules imported by the pipeline and the experiments: image cache and trainer core, IICS fine-tuning, label-free inference levers, ST evaluation helpers |
-| `experiments/ablations/` | 29 scripts, one per claim: alternatives that were tried, including the negative results reported in Chapter 5 |
+| `experiments/ablations/` | 28 scripts, one per claim: alternatives that were tried, including the negative results reported in Chapter 5 |
 | `experiments/diagnostics/` | 18 audits that train nothing and establish one fact each (coat pattern, per-camera errors, pseudo-label precision) |
 | `experiments/figure_scripts/` | 3 dissertation figure generators |
 | `experiments/legacy/` | 3 superseded pre-ladder scripts, kept for provenance |
