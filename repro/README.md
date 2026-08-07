@@ -39,3 +39,23 @@ Seeds are supplied on the command line and become part of the checkpoint filenam
 Stage 1 uses seeds 0-4, deployment students 10-12, hard cannot-link students 16-18, and
 MegaDescriptor students 40-42. Keep these numbers: `fuse_final.py` locates each model's saved
 embeddings by filename.
+
+## Extension rungs: from 0.926 to the 0.945 selection
+
+The core ladder above ends at the heterogeneous fusion (P1 0.926). The headline 0.945 is a
+per-protocol selection over a larger model zoo, built by iterating the distillation ladder
+two more rungs; convergence is declared when a further rung stops helping (Chapter 4).
+
+| Order | Script | What it builds |
+|---|---|---|
+| E1 | `make_fused_teacher.py` | fused teacher: 0.4*DINOv2 + 0.6*Mega trio-mean concatenation |
+| E2 | `vitb_unsup_mega.py` variants | megaft s50 (fused teacher), mega2 s60-62 (`--n-stage 2`), mega2ft s80-82 (both) |
+| E3 | `make_super_teacher.py` | rung-2 super teacher (mega2ft + mega2 + hc trio-mean concat) |
+| E4 | `vitb_unsup_mega.py` on it | sup2 students s90-92 |
+| E5 | `make_super_teacher2.py` | rung-3 super teacher (sup2 + mega2ft + hc) |
+| E6 | `vitb_unsup_mega.py` on it | rung-3 students s100-102 (this rung regresses: convergence) |
+| E7 | `eval_sweep.py` per batch | one `_sweep_*_emb.npz` per trio |
+| E8 | `ensemble_search.py`, `fuse_final.py` | per-protocol greedy selection over the zoo -> 0.945 |
+
+The exact teacher space used for the historical mega2 runs was not archived; when
+reproducing, verify each retrained variant against its `sweep_*_v1.json` reference.

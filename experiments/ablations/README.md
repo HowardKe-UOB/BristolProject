@@ -15,9 +15,6 @@ Run everything from the repository root, e.g. `python experiments\ablations\clus
 | `fuse_supervised.py` | Fuses the GT-supervised twin with the zero-human heterogeneous ensemble to measure the fusion ceiling and whether the label-free oblique strength lifts the supervised model. | fuse_supervised_v1.json |
 | `hub_relay.py` | Training-free two-hop retrieval that relays dorsal-dorsal matching through oblique-camera hub tracklets, fused with the champion distance via RRF/gating/QE. | hub_relay_v1.json |
 | `label_efficiency.py` | Semi-supervised label-efficiency curve: enrolls a fraction of identities with GT labels, trains the finetune+IICS pipeline multi-seed, and reports rank-1 vs labeling fraction. | - |
-| `make_fused_teacher.py` | Builds a 0.4*DINOv2 + 0.6*Mega fused teacher embedding by weighted concatenation and saves _fused_teacher_emb.npz for the trainers' --teacher-npz. | - |
-| `make_super_teacher.py` | Builds a weighted-concat 'super teacher' from mega2ft/mega2/hc trios and reports its cross-camera and dorsal link precision vs earlier teachers. | - |
-| `make_super_teacher2.py` | Ladder rung 3 super teacher (sup2 + mega2ft + hc trios) with the same link-precision diagnostic, to test whether the distillation ladder has converged. | - |
 | `mega_frozen.py` | Zero-training evaluation of frozen MegaDescriptor-L-384 features under the champion inference recipe, as the decision gate for a full Mega retrain. | mega_frozen_v1.json |
 | `mega_search.py` | Greedy forward ensemble selection over the full 21-model zero-human model zoo, per protocol (P1 / dorsal / P2), with cached per-model champion distances. | mega_search_v1.json |
 | `mega_search2.py` | Pushes P2/dorsal further with greedy selection plus DBSCAN cluster-consistency reranking and weighted unions of the best sets. | mega_search2_v1.json |
