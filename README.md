@@ -49,7 +49,7 @@ all evaluation - is this repository.
 | `experiments/diagnostics/` | 18 audits that train nothing and establish one fact each (coat pattern, per-camera errors, pseudo-label precision) |
 | `experiments/figure_scripts/` | 3 dissertation figure generators |
 | `experiments/legacy/` | 3 superseded pre-ladder scripts, kept for provenance |
-| `artifacts2/` | 100 archived result JSONs plus 5 control CSVs - every number in the dissertation traces to one of these; see `artifacts2/README.md` |
+| `artifacts2/` | 101 archived result JSONs plus 5 control CSVs - every number in the dissertation traces to one of these; see `artifacts2/README.md` |
 | `docs/reference/` | Per-stage fact sheets with file:line citations |
 | `hpc/` | Slurm job scripts for the University of Bristol BluePebble cluster: the whole ladder as seven submissions, with walltime-safe resume |
 

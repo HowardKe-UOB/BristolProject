@@ -31,7 +31,7 @@ own provenance: the script name, the checkpoint or embedding file, and the seed.
 
 | Family | Files | Holds |
 |---|---|---|
-| Phase-1 dataset build and floors | 12 | Dataset census, tracklet clustering quality, the frozen splits, and the no-training floor controls (random / colour / frozen ViT-S / frozen ViT-B; the `*_f8_v1` files are the eight-frame reruns quoted in the dissertation) |
+| Phase-1 dataset build and floors | 13 | Dataset census, tracklet clustering quality, the frozen splits, and the no-training floor controls (random / colour / frozen ViT-S / frozen ViT-B / frozen MegaDescriptor; the `*_f8_v1` files are the eight-frame reruns quoted in the dissertation) |
 | Stage-1 CAP seeds | 10 | Per-seed unsupervised results |
 | Stage-2 teacher | 4 | Combining five seeds into the ensemble teacher |
 | Distillation | 3 | The frozen pseudo-labels and their precision/recall audit |
