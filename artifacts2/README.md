@@ -39,7 +39,7 @@ own provenance: the script name, the checkpoint or embedding file, and the seed.
 | Fusion and final numbers | 12 | Multi-model fusion, greedy subset search, the headline figures |
 | Protocol validation | 3 | One model scored under every protocol |
 | Foundation models | 4 | MegaDescriptor and SigLIP off-the-shelf comparisons |
-| Retrieval-lever ablations | 11 | Re-ranking, query expansion, TTA (several negative) |
+| Retrieval-lever ablations | 12 | Re-ranking, query expansion, TTA (several negative) |
 | Spatio-temporal | 5 | Camera-topology prior, with and without ST masking |
 | Diagnostics | 7 | Is the model reading coat colour? body size? which camera fails? |
 | Early baselines | 2 | Superseded warm-up runs |

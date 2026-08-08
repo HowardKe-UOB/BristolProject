@@ -38,10 +38,12 @@ def sc(q, g, dist, mask):
     return r, rs
 
 
-def line(name, q, g, dist, mask):
+def line(name, q, g, dist, mask, bucket=None):
     r, rs = sc(q, g, dist, mask)
     print(f"  {name:34s}: r1={r['rank-1']:.3f} r5={r['rank-5']:.3f} mAP={r['mAP']:.3f}"
           f"  |+ST r1={rs['rank-1']:.3f} r5={rs['rank-5']:.3f} mAP={rs['mAP']:.3f}")
+    if bucket is not None:
+        bucket[name] = {"plain": r, "st": rs}
 
 
 def load(npz, key, q, g):
@@ -64,21 +66,31 @@ def main():
     cams = [it.camera for it in q] + [it.camera for it in g]
     mask = build_st_mask(q, g, index, topo, margin=0)
 
+    report = {}
     for tag, npz, key in [("CHAMPION+TTA", "_vitb_unsup_tta_emb_v1.npz", "feat768"),
                           ("CAP (no TTA)", "_vitb_cap_emb_v1.npz", "feat768"),
                           ("CAP + TTA", "_vitb_cap_emb_v1.npz", "feat768_tta")]:
         Qf, Gf = load(npz, key, q, g)
         P = parts(q, g, Qf, Gf, cams)
         print(f"\n### {tag} ({npz}:{key}) ###")
+        sec = report[tag] = {"embeddings_file": npz, "key": key}
         for nm in ("cos", "CC", "PCAW", "CC-RR"):
-            line(nm, q, g, P[nm], mask)
+            line(nm, q, g, P[nm], mask, sec)
         print("  -- RRF(CC,PCAW,CC-RR) k-stability --")
         for k in (10, 20, 40, 60):
-            line(f"RRF k={k}", q, g, rrf([P["CC"], P["PCAW"], P["CC-RR"]], k=k), mask)
+            line(f"RRF k={k}", q, g, rrf([P["CC"], P["PCAW"], P["CC-RR"]], k=k), mask, sec)
         print("  -- leave-one-component-out (k=20) --")
-        line("RRF(PCAW,CC-RR)", q, g, rrf([P["PCAW"], P["CC-RR"]], k=20), mask)
-        line("RRF(CC,CC-RR)", q, g, rrf([P["CC"], P["CC-RR"]], k=20), mask)
-        line("RRF(CC,PCAW)", q, g, rrf([P["CC"], P["PCAW"]], k=20), mask)
+        line("RRF(PCAW,CC-RR)", q, g, rrf([P["PCAW"], P["CC-RR"]], k=20), mask, sec)
+        line("RRF(CC,CC-RR)", q, g, rrf([P["CC"], P["CC-RR"]], k=20), mask, sec)
+        line("RRF(CC,PCAW)", q, g, rrf([P["CC"], P["PCAW"]], k=20), mask, sec)
+
+    import json
+    out = "artifacts2/cap_confirm_v1.json"
+    with open(out, "w", encoding="utf-8") as fh:
+        json.dump({"script": "cap_confirm.py", "protocol": "P1 leave-out 66.130",
+                   "note": "full stack = RRF k=20; leave-one-out rows drop one component",
+                   **report}, fh, indent=1)
+    print(f"\nsaved {out}", flush=True)
 
 
 if __name__ == "__main__":

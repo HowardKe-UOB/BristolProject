@@ -7,7 +7,7 @@ Run everything from the repository root, e.g. `python experiments\diagnostics\ca
 | Script | What it answers | Result archived as |
 |---|---|---|
 | `cap_breakdown.py` | Embeds the CAP checkpoint (feat768, normal + flip-TTA) to npz and runs the full inference-lever matrix (cosine/CC/PCAW/CC-RR/RRF, each +/- ST) against the prior champion. | cap_breakdown_v1.json |
-| `cap_confirm.py` | CPU-only re-verification of the CAP 0.804 result from saved embeddings: RRF k-stability and leave-one-component-out of the champion recipe vs the prior champion. | - |
+| `cap_confirm.py` | CPU-only re-verification of the CAP 0.804 result from saved embeddings: RRF k-stability and leave-one-component-out of the champion recipe (source of the thesis's subtractive-ablation table). | cap_confirm_v1.json |
 | `cap_ens_curve.py` | Ensemble-size curve for the 5 CAP seeds: evaluates every C(5,k) subset distance-mean and reports mean/std of rank-1/5 and mAP per k. | cap_ens_curve_v1.json |
 | `coat_pattern_diag.py` | Samples crops from the tarball and classifies each as bicolor / mostly-dark / mostly-light, quantifying the 'fragmentary appearance' claim. | coat_pattern_diag_v1.json |
 | `diag_percam_errors.py` | Explains why dorsal query cameras score low: per-camera rank-1 with full vs dorsal-only gallery, plus attribution of rank-1 errors to the oblique camera. | diag_percam_errors_v1.json |
