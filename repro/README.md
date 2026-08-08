@@ -1,6 +1,7 @@
 # Reproduction ladder
 
-The fifteen scripts that produce the headline numbers, in run order. Everything else in the
+The twenty-one scripts that produce the headline numbers: the core ladder below in run
+order, plus the extension rungs tabulated at the end of this file. Everything else in the
 repository is optional: see `experiments/`.
 
 **Run every command from the repository root.** Data and artifact paths are relative to the

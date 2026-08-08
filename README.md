@@ -51,7 +51,7 @@ all evaluation - is this repository.
 | `experiments/legacy/` | 3 superseded pre-ladder scripts, kept for provenance |
 | `artifacts2/` | 102 archived result JSONs plus 5 control CSVs - every number in the dissertation traces to one of these; see `artifacts2/README.md` |
 | `docs/reference/` | Per-stage fact sheets with file:line citations |
-| `hpc/` | Slurm job scripts for the University of Bristol BluePebble cluster: the whole ladder as seven submissions, with walltime-safe resume |
+| `hpc/` | Slurm job scripts for the University of Bristol BluePebble cluster: the core ladder as ten submissions plus seven extension-rung jobs (08a-g), all with walltime-safe resume |
 
 Each folder carries its own README indexing every script in it with a one-line statement of
 what question it answers and which archived JSON holds its result.
@@ -119,7 +119,12 @@ checked against the archived JSONs in `artifacts2/`. Bit-exact reproduction of t
 dissertation's numbers requires the original checkpoints (48 checkpoints, ~51 GB - available
 on request). All fusion and evaluation steps run on CPU from saved embeddings.
 
-Nothing under `experiments/` is needed for the headline result. Those scripts are the
+The recipe above reproduces the core ladder (the 0.926-tier fusion). The thirteen
+extension models and the per-protocol selection behind the 0.945 headline are
+documented as rungs E1-E8 in `repro/README.md`, roughly four further GPU-hours
+(`hpc/08a`-`08g` run them as a chain).
+
+Nothing under `experiments/` is needed for the core result. Those scripts are the
 evidence for individual claims: one script per ablation, per negative result and per audit.
 
 ## Citation

@@ -25,8 +25,10 @@ MegaDescriptor via Hugging Face) are downloaded on first use. Run `setup_env.sh`
 **login node** once: it installs the environment and pre-downloads every weight into
 `/user/work/$USER/hf_cache`. The job scripts then set `HF_HUB_OFFLINE=1`.
 
-**3. Budget about 80 GB of disk on `/user/work`.** The image cache is 15 GB, the
-checkpoints roughly 51 GB across the full ladder, extracted crops another 0.3 GB.
+**3. Budget about 100 GB of disk on `/user/work`.** The image cache is 15 GB; the core
+ladder's checkpoints are roughly 20 GB and the extension rungs (thirteen Mega-sized
+checkpoints at ~1.3 GB each) add another ~17 GB; extracted crops, embeddings and the
+HF cache take the rest.
 
 ## Which cards actually work here
 
@@ -74,14 +76,23 @@ bash hpc/setup_env.sh          # venv + dependencies + pre-downloaded backbones
 Each script prints the `sbatch` line for the next one. Run them from the repository root.
 
 ```bash
-sbatch hpc/01_signals_cache.sbatch    # CPU  ~2 h   signals, splits, 15 GB image cache
-sbatch hpc/02_vits_cache.sbatch       # GPU  ~15 m  frozen ViT-S cache Stage 1 reads
-sbatch hpc/03_cap.sbatch              # GPU  array 0-4, Stage 1 (five seeds)
-sbatch hpc/04_teacher.sbatch          # GPU  ~30 m  ensemble teacher + frozen labels
-sbatch hpc/05_students.sbatch         # GPU  array 0-5, Stage 3 (six students)
-sbatch hpc/06_mega.sbatch             # GPU  array 0-2, Stage 4 (three Mega students)
-sbatch hpc/07_fuse_eval.sbatch        # CPU  ~20 m  fusion and the three protocols
+bash hpc/submit.sh hpc/01_signals_cache.sbatch    # CPU  ~5 m   signals, splits, 15 GB image cache
+bash hpc/submit.sh hpc/02_vits_cache.sbatch       # GPU  ~6 m   frozen ViT-S cache Stage 1 reads
+bash hpc/submit.sh hpc/03_cap.sbatch              # GPU  array 0-4, Stage 1 (five seeds)
+bash hpc/submit.sh hpc/04_teacher.sbatch          # GPU  ~30 m  ensemble teacher + frozen labels
+bash hpc/submit.sh hpc/05a_holdout_students.sbatch # GPU array 0-4, holdout students (seeds 5-9)
+bash hpc/submit.sh hpc/05b_student_space.sbatch   # GPU  ~20 m  embeds them into the v4 mining space
+bash hpc/submit.sh hpc/05_students.sbatch         # GPU  array 0-5, deployment + hard-CL students
+bash hpc/submit.sh hpc/06_mega.sbatch             # GPU  array 0-2, three Mega students
+bash hpc/submit.sh hpc/06b_embed_sweep.sbatch     # GPU  ~50 m  embeds the nine students for fusion
+bash hpc/submit.sh hpc/07_fuse_eval.sbatch        # CPU  ~35 m  fusion and the three protocols
 ```
+
+That reproduces the core ladder (0.926-tier). The 0.945 selection needs the extension
+rungs, chained the same way: `08a` fused teacher -> `08b` seven Mega variants ->
+`08c` embed + rung-2 super teacher -> `08d` sup2 students -> `08e` embed + rung-3
+teacher -> `08f` rung-3 students -> `08g` embed + every selection script (prints the
+headline `max_P1`; reference 0.9448).
 
 Steps 3 to 6 depend on the previous step finishing. Chain them if you prefer not to watch:
 
