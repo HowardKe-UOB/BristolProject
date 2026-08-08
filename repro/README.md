@@ -56,7 +56,7 @@ two more rungs; convergence is declared when a further rung stops helping (Chapt
 | E5 | `make_super_teacher2.py` | rung-3 super teacher (sup2 + mega2ft + hc) |
 | E6 | `vitb_unsup_mega.py` on it | rung-3 students s100-102 (this rung regresses: convergence) |
 | E7 | `eval_sweep.py` per batch | one `_sweep_*_emb.npz` per trio |
-| E8 | `mega_search.py` (also `ensemble_search.py`, `fuse_final.py`) | per-protocol greedy selection over the 18-model zoo; mega_search's max_P1 = 0.9448 is the 0.945 |
+| E8 | `mega_search.py` (also `ensemble_search.py`, `fuse_final.py`) | per-protocol greedy selection over the 21-model zoo (6 DINOv2 students + 5 Mega trios; megaft is superseded by mega2ft and sits out); mega_search's max_P1 = 0.9448 is the 0.945 |
 
 The exact teacher space used for the historical mega2 runs was not archived; when
 reproducing, verify each retrained variant against its `sweep_*_v1.json` reference.
