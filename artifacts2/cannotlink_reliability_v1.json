@@ -1,0 +1,24 @@
+{
+ "script": "cannotlink_reliability.py",
+ "listing": "2025Sep18.listing.txt",
+ "overlap_threshold": 0.02,
+ "crop_level": {
+  "nonoverlap_pairs": 625606,
+  "nonoverlap_violations": 879,
+  "all_pairs": 912303,
+  "all_same_identity": 15136,
+  "reliability": 0.9985949623245302,
+  "shortcut_positive_rate": 0.016590979093568693
+ },
+ "tracklet_level": {
+  "constraints_997_universe": 12958,
+  "violations_997": 29,
+  "reliability_997": 0.9977620003086897,
+  "constraints_total_1079": 14443,
+  "violations_total": 29,
+  "reliability_total": 0.997992106902998,
+  "cross_camera_constraints": 10762,
+  "cross_camera_violations": 29,
+  "cross_camera_reliability": 0.9973053335811187
+ }
+}

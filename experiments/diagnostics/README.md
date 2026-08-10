@@ -6,6 +6,7 @@ Run everything from the repository root, e.g. `python experiments\diagnostics\ca
 
 | Script | What it answers | Result archived as |
 |---|---|---|
+| `cannotlink_reliability.py` | The free negative signal, measured: 625,606 same-instant non-overlap crop pairs at 99.86% reliability; the 12,958-constraint set of the 997 universe at 99.78%; the naive same-instant shortcut is right only 1.66% of the time. | cannotlink_reliability_v1.json |
 | `cap_breakdown.py` | Embeds the CAP checkpoint (feat768, normal + flip-TTA) to npz and runs the full inference-lever matrix (cosine/CC/PCAW/CC-RR/RRF, each +/- ST) against the prior champion. | cap_breakdown_v1.json |
 | `cap_confirm.py` | CPU-only re-verification of the CAP 0.804 result from saved embeddings: RRF k-stability and leave-one-component-out of the champion recipe (source of the thesis's subtractive-ablation table). | cap_confirm_v1.json |
 | `cap_ens_curve.py` | Ensemble-size curve for the 5 CAP seeds: evaluates every C(5,k) subset distance-mean and reports mean/std of rank-1/5 and mAP per k. | cap_ens_curve_v1.json |

@@ -49,7 +49,7 @@ all evaluation - is this repository.
 | `experiments/diagnostics/` | 18 audits that train nothing and establish one fact each (coat pattern, per-camera errors, pseudo-label precision) |
 | `experiments/figure_scripts/` | 3 dissertation figure generators |
 | `experiments/legacy/` | 3 superseded pre-ladder scripts, kept for provenance |
-| `artifacts2/` | 102 archived result JSONs plus 5 control CSVs - every number in the dissertation traces to one of these; see `artifacts2/README.md` |
+| `artifacts2/` | 103 archived result JSONs plus 5 control CSVs - every number in the dissertation traces to one of these; see `artifacts2/README.md` |
 | `docs/reference/` | Per-stage fact sheets with file:line citations |
 | `hpc/` | Slurm job scripts for the University of Bristol BluePebble cluster: the core ladder as ten submissions plus seven extension-rung jobs (08a-g), all with walltime-safe resume |
 
@@ -116,7 +116,7 @@ than to the last decimal.
 
 Expect results within the reported seed variance (students +-0.03); every number can be
 checked against the archived JSONs in `artifacts2/`. Bit-exact reproduction of the
-dissertation's numbers requires the original checkpoints (48 checkpoints, ~51 GB - available
+dissertation's numbers requires the original checkpoints (47 distinct models in 48 weight files, ~51 GB - available
 on request). All fusion and evaluation steps run on CPU from saved embeddings.
 
 The recipe above reproduces the core ladder (the 0.926-tier fusion). The thirteen
