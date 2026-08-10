@@ -63,7 +63,9 @@ artifact paths are relative to the working directory. Pretrained backbones downl
 automatically on first use.
 
 ```
-# 0. place 2025Sep18.tar.gz + 2025Sep18.listing.txt in the repo root
+# 0. place 2025Sep18.tar.gz in the repo root; the listing is its table of contents,
+#    regenerable in one command if you only have the tar:
+#      tar -tzf 2025Sep18.tar.gz > 2025Sep18.listing.txt
 pip install -r requirements.txt
 
 # 1. signals and splits
