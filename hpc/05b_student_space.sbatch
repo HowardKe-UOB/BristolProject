@@ -16,11 +16,11 @@
 set -euo pipefail
 mkdir -p logs
 source hpc/env.sh
+source hpc/train_loop.sh
 export HF_HUB_OFFLINE=1
 
-for s in 5 6 7 8 9; do
-    test -f "_vitb_dst_s${s}_ckpt.pt" || { echo "missing _vitb_dst_s${s}_ckpt.pt (run hpc/05a_holdout_students.sbatch first)" >&2; exit 1; }
-done
+require_trained 1000 _vitb_dst_s5_ckpt.pt _vitb_dst_s6_ckpt.pt _vitb_dst_s7_ckpt.pt \
+    _vitb_dst_s8_ckpt.pt _vitb_dst_s9_ckpt.pt
 
 nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
 

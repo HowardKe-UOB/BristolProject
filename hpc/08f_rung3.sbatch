@@ -17,6 +17,7 @@ mkdir -p logs
 source hpc/env.sh
 source hpc/train_loop.sh
 export HF_HUB_OFFLINE=1
+test -e "_imgcache.npy" || { echo "missing _imgcache.npy (run 01)" >&2; exit 1; }
 test -e "_super_teacher2_emb.npz" || { echo "missing _super_teacher2_emb.npz (run 08e)" >&2; exit 1; }
 SEED=$((100 + SLURM_ARRAY_TASK_ID))
 CKPT="_vitb_r3_s${SEED}_ckpt.pt"

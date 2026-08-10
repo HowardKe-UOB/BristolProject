@@ -14,12 +14,11 @@
 set -euo pipefail
 mkdir -p logs
 source hpc/env.sh
+source hpc/train_loop.sh
 export HF_HUB_OFFLINE=1
-for f in _vitb_megaft_s50_ckpt.pt _vitb_mega2_s60_ckpt.pt _vitb_mega2_s61_ckpt.pt \
-         _vitb_mega2_s62_ckpt.pt _vitb_mega2ft_s80_ckpt.pt _vitb_mega2ft_s81_ckpt.pt \
-         _vitb_mega2ft_s82_ckpt.pt; do
-    test -f "$f" || { echo "missing $f (run 08b)" >&2; exit 1; }
-done
+require_trained 1000 _vitb_megaft_s50_ckpt.pt _vitb_mega2_s60_ckpt.pt \
+    _vitb_mega2_s61_ckpt.pt _vitb_mega2_s62_ckpt.pt _vitb_mega2ft_s80_ckpt.pt \
+    _vitb_mega2ft_s81_ckpt.pt _vitb_mega2ft_s82_ckpt.pt
 python repro/eval_sweep.py --tag megaft_s50 --backbone mega --ckpts _vitb_megaft_s50_ckpt.pt
 python repro/eval_sweep.py --tag mega2_trio --backbone mega \
     --ckpts _vitb_mega2_s60_ckpt.pt _vitb_mega2_s61_ckpt.pt _vitb_mega2_s62_ckpt.pt

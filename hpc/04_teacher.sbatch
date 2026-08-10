@@ -16,11 +16,11 @@
 set -euo pipefail
 mkdir -p logs
 source hpc/env.sh
+source hpc/train_loop.sh
 export HF_HUB_OFFLINE=1
 
-for s in 0 1 2 3 4; do
-    test -f "_vitb_cap_s${s}_ckpt.pt" || { echo "missing _vitb_cap_s${s}_ckpt.pt" >&2; exit 1; }
-done
+require_trained 1000 _vitb_cap_s0_ckpt.pt _vitb_cap_s1_ckpt.pt _vitb_cap_s2_ckpt.pt \
+    _vitb_cap_s3_ckpt.pt _vitb_cap_s4_ckpt.pt
 
 echo "== embedding the five seeds and fusing them (concat / RRF / distance-mean)"
 python repro/eval_cap_ensemble.py

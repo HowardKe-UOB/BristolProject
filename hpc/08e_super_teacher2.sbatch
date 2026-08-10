@@ -14,10 +14,9 @@
 set -euo pipefail
 mkdir -p logs
 source hpc/env.sh
+source hpc/train_loop.sh
 export HF_HUB_OFFLINE=1
-for s in 90 91 92; do
-    test -f "_vitb_sup2_s${s}_ckpt.pt" || { echo "missing sup2 s${s} (run 08d)" >&2; exit 1; }
-done
+require_trained 1000 _vitb_sup2_s90_ckpt.pt _vitb_sup2_s91_ckpt.pt _vitb_sup2_s92_ckpt.pt
 python repro/eval_sweep.py --tag sup2_trio --backbone mega \
     --ckpts _vitb_sup2_s90_ckpt.pt _vitb_sup2_s91_ckpt.pt _vitb_sup2_s92_ckpt.pt
 python repro/make_super_teacher2.py

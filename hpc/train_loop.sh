@@ -13,6 +13,23 @@ print(torch.load(p, map_location="cpu")["step"] if os.path.exists(p) else 0)
 PY
 }
 
+# require_trained <target> <ckpt...>: refuse to proceed unless every checkpoint
+# actually reached the target step count. Existence checks alone let an
+# undertrained checkpoint (a walltime-exhausted run) slip through afterok gates.
+require_trained () {
+    local target="$1"; shift
+    local ok=1 s c
+    for c in "$@"; do
+        if [ ! -f "$c" ]; then echo "missing checkpoint: $c" >&2; ok=0; continue; fi
+        s=$(ckpt_step "$c")
+        if [ "$s" -lt "$target" ]; then
+            echo "undertrained checkpoint: $c at step $s < $target (resubmit its training job)" >&2
+            ok=0
+        fi
+    done
+    [ "$ok" -eq 1 ]
+}
+
 # train_until <target> <ckpt> <chunk_seconds> <job_seconds> <command...>
 train_until () {
     local target="$1" ckpt="$2" chunk="$3" job_seconds="$4"

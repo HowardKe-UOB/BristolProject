@@ -36,6 +36,8 @@ fi
 
 # The echo goes to stderr so that "J=$(bash hpc/submit.sh ... --parsable)" captures the
 # job id alone and job chaining keeps working.
+mkdir -p logs   # Slurm must open --output=logs/... before the job script runs
+
 # The ${arr[@]+...} guard keeps an empty array from tripping "set -u" on bash 4.2, which is
 # what login nodes of this vintage ship.
 echo "sbatch --account=${ACRC_ACCOUNT} --partition=${partition}" \

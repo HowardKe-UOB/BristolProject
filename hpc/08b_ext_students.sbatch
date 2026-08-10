@@ -21,6 +21,7 @@ mkdir -p logs
 source hpc/env.sh
 source hpc/train_loop.sh
 export HF_HUB_OFFLINE=1
+test -e "_imgcache.npy" || { echo "missing _imgcache.npy (run 01)" >&2; exit 1; }
 test -e "_fused_teacher_emb.npz" || { echo "missing _fused_teacher_emb.npz (run 08a)" >&2; exit 1; }
 test -e "_vitb_dst_emb_v4.npz" || { echo "missing _vitb_dst_emb_v4.npz (run 05b)" >&2; exit 1; }
 

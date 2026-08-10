@@ -18,15 +18,12 @@
 set -euo pipefail
 mkdir -p logs
 source hpc/env.sh
+source hpc/train_loop.sh
 export HF_HUB_OFFLINE=1
 
-for f in _vitb_dep_s10_ckpt.pt _vitb_dep_s11_ckpt.pt _vitb_dep_s12_ckpt.pt \
-         _vitb_hc2_s16_ckpt.pt _vitb_hc2_s17_ckpt.pt _vitb_hc2_s18_ckpt.pt; do
-    test -f "$f" || { echo "missing $f (run hpc/05_students.sbatch first)" >&2; exit 1; }
-done
-for f in _vitb_mega_s40_ckpt.pt _vitb_mega_s41_ckpt.pt _vitb_mega_s42_ckpt.pt; do
-    test -f "$f" || { echo "missing $f (run hpc/06_mega.sbatch first)" >&2; exit 1; }
-done
+require_trained 1000 _vitb_dep_s10_ckpt.pt _vitb_dep_s11_ckpt.pt _vitb_dep_s12_ckpt.pt \
+    _vitb_hc2_s16_ckpt.pt _vitb_hc2_s17_ckpt.pt _vitb_hc2_s18_ckpt.pt \
+    _vitb_mega_s40_ckpt.pt _vitb_mega_s41_ckpt.pt _vitb_mega_s42_ckpt.pt
 
 nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
 

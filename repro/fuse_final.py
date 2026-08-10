@@ -95,6 +95,11 @@ def main():
         for n in names:
             M = models[n]; Mn = M / (np.linalg.norm(M, axis=1, keepdims=True) + 1e-12)
             D += 1.0 - Mn @ Mn.T
+        # NOTE: the 0.5 halves the mean cosine distance, so eps=0.35 below acts
+        # like eps=0.7 on the full cosine scale -- a historical divergence from
+        # fuse_hetero.py, which clusters the unhalved distance at eps=0.35. Kept
+        # as-is: the archived numbers were produced this way; the thesis appendix
+        # documents both variants.
         D = np.clip(0.5 * (D / len(names)), 0.0, None); np.fill_diagonal(D, 0.0)
         ip = {t: i for i, t in enumerate(ids)}
         for p in cl:

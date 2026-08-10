@@ -15,10 +15,9 @@
 set -euo pipefail
 mkdir -p logs
 source hpc/env.sh
+source hpc/train_loop.sh
 export HF_HUB_OFFLINE=1
-for s in 100 101 102; do
-    test -f "_vitb_r3_s${s}_ckpt.pt" || { echo "missing r3 s${s} (run 08f)" >&2; exit 1; }
-done
+require_trained 1000 _vitb_r3_s100_ckpt.pt _vitb_r3_s101_ckpt.pt _vitb_r3_s102_ckpt.pt
 python repro/eval_sweep.py --tag r3_trio --backbone mega \
     --ckpts _vitb_r3_s100_ckpt.pt _vitb_r3_s101_ckpt.pt _vitb_r3_s102_ckpt.pt
 

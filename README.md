@@ -77,6 +77,10 @@ python common/vitb_unsup.py --build-cache --tar 2025Sep18.tar.gz
 # 1c. the frozen ViT-S features stage 1 seeds its proxies from (9 MB, GPU, ~15 min)
 python repro/make_vits_cache.py
 
+# NOTE: every training command below runs one wall-clock chunk (4-8 min) and then
+#       exits, resuming from its checkpoint on the next call. Re-run the same
+#       command until it prints "reached 1000/1000", or pass --wall 7200 to
+#       finish in a single invocation.
 # 2. stage 1: five CAP seeds (GPU, ~40 min each), seeds 0-4
 python repro/vitb_unsup_cap.py --seed 0 --ckpt _vitb_cap_s0_ckpt.pt   # ... repeat for seeds 1-4
 

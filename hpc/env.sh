@@ -34,9 +34,11 @@ export OMP_NUM_THREADS="${SLURM_CPUS_PER_TASK:-4}"
 
 # Site-local settings live in an untracked file, so "git pull" never fights with them and a
 # project account never reaches the public repository. Create it once:
+# Use the ${VAR:-...} form inside it so a one-off inline override
+# (ACRC_GPU_GRES=... bash hpc/submit.sh ...) still wins over the file:
 #     cat > hpc/env.local.sh <<'EOF'
-#     export ACRC_ACCOUNT="your_account"
-#     export ACRC_GPU_GRES="gpu:rtx_3090:1"
+#     export ACRC_ACCOUNT="${ACRC_ACCOUNT:-your_account}"
+#     export ACRC_GPU_GRES="${ACRC_GPU_GRES:-gpu:rtx_3090:1}"
 #     EOF
 if [ -f "${REPO}/hpc/env.local.sh" ]; then
     source "${REPO}/hpc/env.local.sh"
