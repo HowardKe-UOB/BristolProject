@@ -69,7 +69,7 @@ automatically on first use.
 pip install -r requirements.txt
 
 # 1. signals and splits
-python repro/build_phase1.py
+python repro/build_phase1.py --listing 2025Sep18.listing.txt --tar 2025Sep18.tar.gz
 
 # 1b. the uint8 image cache every trainer mmaps (15 GB on disk, CPU, ~1 h)
 python common/vitb_unsup.py --build-cache --tar 2025Sep18.tar.gz
