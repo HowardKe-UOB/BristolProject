@@ -23,4 +23,4 @@ CKPT="_vitb_r3_s${SEED}_ckpt.pt"
 JOB_SECONDS=$((12 * 3600))
 nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
 train_until 1000 "${CKPT}" 1800 "${JOB_SECONDS}" \
-    python repro/vitb_unsup_mega.py --seed "${SEED}" --n-stage 2 --teacher-npz _super_teacher2_emb.npz
+    python repro/vitb_unsup_mega.py --seed "${SEED}" --n-stage 2 --P 6 --teacher-npz _super_teacher2_emb.npz

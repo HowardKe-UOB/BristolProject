@@ -26,17 +26,19 @@ test -e "_vitb_dst_emb_v4.npz" || { echo "missing _vitb_dst_emb_v4.npz (run 05b)
 
 case "${SLURM_ARRAY_TASK_ID}" in
     0)
-        SEED=50; NS=1; TN="_fused_teacher_emb.npz"
+        SEED=50; NS=1; TN="_fused_teacher_emb.npz"; PP=10
         CKPT="_vitb_megaft_s50_ckpt.pt" ;;
     1|2|3)
-        SEED=$((59 + SLURM_ARRAY_TASK_ID)); NS=2; TN="_vitb_dst_emb_v4.npz"
+        SEED=$((59 + SLURM_ARRAY_TASK_ID)); NS=2; TN="_vitb_dst_emb_v4.npz"; PP=6
         CKPT="_vitb_mega2_s${SEED}_ckpt.pt" ;;
     4|5|6)
-        SEED=$((76 + SLURM_ARRAY_TASK_ID)); NS=2; TN="_fused_teacher_emb.npz"
+        SEED=$((76 + SLURM_ARRAY_TASK_ID)); NS=2; TN="_fused_teacher_emb.npz"; PP=6
         CKPT="_vitb_mega2ft_s${SEED}_ckpt.pt" ;;
 esac
+# P=6 for n-stage 2 is the documented recipe (thesis ch5/appendix): two unfrozen Swin
+# stages double the optimiser state, and P=10 out-of-memories even a 24 GB card.
 JOB_SECONDS=$((12 * 3600))
 nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
 echo "== seed ${SEED}  n-stage ${NS}  teacher ${TN} -> ${CKPT}"
 train_until 1000 "${CKPT}" 1800 "${JOB_SECONDS}" \
-    python repro/vitb_unsup_mega.py --seed "${SEED}" --n-stage "${NS}" --teacher-npz "${TN}"
+    python repro/vitb_unsup_mega.py --seed "${SEED}" --n-stage "${NS}" --teacher-npz "${TN}" --P "${PP}"
