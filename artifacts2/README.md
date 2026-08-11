@@ -8,6 +8,23 @@ Filenames map one-to-one onto scripts: `fuse_final.py` writes `fuse_final_v1.jso
 `coat_pattern_diag.py` writes `coat_pattern_diag_v1.json`. To verify a number, run the script
 that owns the file and compare.
 
+## Why "2", and what a rerun does to this folder
+
+The plain `artifacts/` directory (no suffix) is created at run time by
+`repro/build_phase1.py` for data-stage products (manifest statistics and the large
+regenerated CSVs); it exists only on the machine that ran the build and is not
+committed. When finished experiment results later needed a permanent home of their
+own, they went into a second directory, and the name stuck. Rule of thumb:
+`artifacts/` is rebuilt on every machine, `artifacts2/` is the archive.
+
+Reproducing the pipeline overwrites this folder in place: every script writes its
+result under exactly the filename listed here, so your numbers replace the archived
+copies one file at a time as each stage finishes. A fresh clone therefore starts
+with the dissertation's reference numbers and gradually turns into your own result
+set. That is the intended way to compare: diff your finished copy against the
+pristine one on GitHub (or a second clone), or snapshot this folder before you
+start.
+
 ## What a file looks like
 
 Each JSON is a flat dictionary whose keys name experiment conditions in plain words and whose
