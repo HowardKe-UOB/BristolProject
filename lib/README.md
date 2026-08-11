@@ -16,3 +16,24 @@ Run everything from the repository root, e.g. `python lib\consensus_ens.py`.
 | `train_phase2.py` | Phase-2 scaffolding: build_objective() assembles the multi-task SSL loss (contrastive + Cluster-Contrast + cannot-link) plus a train_step helper; running it directly is a CPU smoke test with random weights. | - |
 | `train_phase2_run.py` | Small frozen-DINOv2-feature Phase-2 run (cached features + light head, full vs loco protocols); also the home of sample_frames(), which vitb_unsup and the whole ViT-B family import. | - |
 | `vitb_unsup.py` | Core unsupervised ViT-B trainer and the repo's shared infrastructure: the uint8 image cache (_imgcache.npy), CacheLoader, embed_tids/embed_crops_cached, and the CACHE/VITB/HOLD constants every ViT-B script imports. | - |
+
+## Method origins
+
+All code here is this repository's own implementation; where a module realises a
+published method, the origin (cited in full in the dissertation's bibliography):
+
+- `vitb_unsup.py` - camera-aware proxy self-training follows CAP (Wang et al., 2021);
+  DINOv2 backbone (Oquab et al., 2024).
+- `train_finetune_iics.py` - the two-stage intra/inter-camera recipe follows IICS
+  (Xuan & Zhang, 2021).
+- `new_levers.py` - k-reciprocal re-ranking (Zhong et al., 2017) and its camera-aware
+  variant CA-Jaccard (Chen et al., 2024), reciprocal rank fusion (Cormack et al., 2009),
+  query expansion in the spirit of AQE (Chum et al., 2007), PCA whitening (classic).
+- `st_validate2.py` - alpha query expansion (Chum et al., 2007); camera centering is the
+  minimal form of camera-aware distance rectification; ST mask see lib/cowreid/st_inference.py.
+- `consensus_ens.py`, `distill_diag.py`, `st_eval_vitb.py`, `train_finetune.py`,
+  `train_phase2.py`, `train_phase2_run.py` - ours (train_phase2 assembles the loss
+  families cited in lib/cowreid/losses.py).
+
+The `cowreid` package documents its own per-module origins in
+[cowreid/README.md](cowreid/README.md).
