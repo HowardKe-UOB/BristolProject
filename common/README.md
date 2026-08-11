@@ -1,12 +1,13 @@
 # Shared script-level infrastructure
 
-Modules imported by the pipeline and by the experiments: the image cache and unsupervised trainer core, the IICS fine-tuning stack, the label-free inference levers, and the spatio-temporal evaluation helpers. Several also have a CLI, but their main role is to be imported.
+Modules imported by the pipeline and by the experiments: the image cache and unsupervised trainer core, the IICS fine-tuning stack, the label-free inference levers, the pseudo-label quality diagnostic, and the spatio-temporal evaluation helpers. Several also have a CLI, but their main role is to be imported.
 
 Run everything from the repository root, e.g. `python common\consensus_ens.py`.
 
 | Script | What it answers | Result archived as |
 |---|---|---|
 | `consensus_ens.py` | Label-free consensus seed weighting plus the cross-camera mutual-kNN link precision helper (mutual_knn_links) imported by all Stage-3/4 trainers and several diagnostics. | consensus_ens_v1.json |
+| `distill_diag.py` | Measures pseudo-label quality in the 5-seed ensemble space (CA-Jaccard DBSCAN at several eps vs herd-size-prior agglomerative): pairwise P/R/F1 and cross-camera recall; exports pair_metrics imported by repro/make_distill_labels.py. | distill_diag_v1.json |
 | `new_levers.py` | Library plus driver of the label-free inference levers (PCA whitening, per-camera whitening, DBA, RRF, camera centering, re-rank sweeps); its helpers are imported widely by other scripts. | new_levers_v1.json |
 | `st_eval_vitb.py` | Rebuilds the ViT-B unsupervised checkpoint, embeds all eval tracklets to a new npz, and scores every label-free inference lever; also exports n_cls_from_ckpt used by other scripts. | st_inference_vitb_v1.json |
 | `st_validate2.py` | Pre-screens cheap label-free inference levers (camera centering, AQE, ST mask, CA-Jaccard rerank) on frozen features; exports camera_center/aqe/run_all reused by other scripts. | st_inference_frozen_v1.json |

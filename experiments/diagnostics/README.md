@@ -12,7 +12,6 @@ Run everything from the repository root, e.g. `python experiments\diagnostics\ca
 | `cap_ens_curve.py` | Ensemble-size curve for the 5 CAP seeds: evaluates every C(5,k) subset distance-mean and reports mean/std of rank-1/5 and mAP per k. | cap_ens_curve_v1.json |
 | `coat_pattern_diag.py` | Samples crops from the tarball and classifies each as bicolor / mostly-dark / mostly-light, quantifying the 'fragmentary appearance' claim. | coat_pattern_diag_v1.json |
 | `diag_percam_errors.py` | Explains why dorsal query cameras score low: per-camera rank-1 with full vs dorsal-only gallery, plus attribution of rank-1 errors to the oblique camera. | diag_percam_errors_v1.json |
-| `distill_diag.py` | Measures pseudo-label quality in the 5-seed ensemble space (CA-Jaccard DBSCAN at several eps vs herd-size-prior agglomerative): pairwise P/R/F1 and cross-camera recall. | distill_diag_v1.json |
 | `hardcl_diag.py` | Counts and profiles the hard cannot-link pairs (similarity distribution, GT violation rate, coverage) available as discrimination signal in the k=2 trio ensemble space. | - |
 | `hetero_teacher_diag.py` | Compares cross-camera mutual-kNN teacher link count and precision (with dorsal-only breakdown) mined in DINOv2, Mega, and fused spaces. | hetero_teacher_diag_v1.json |
 | `local_part_diag.py` | Tests aligned-grid local part matching (2x2/3x3 Swin patch-token pooling) fused with the global champion distance, restricted to dorsal-query-vs-dorsal-gallery pairs. | local_part_diag_v1.json |
