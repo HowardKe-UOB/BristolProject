@@ -21,7 +21,7 @@ python repro/build_phase1.py \
     --out     artifacts
 
 echo "== image cache: crops resized to 518x518, mmap'd by every trainer (15 GB)"
-python common/vitb_unsup.py --build-cache \
+python lib/vitb_unsup.py --build-cache \
     --listing 2025Sep18.listing.txt \
     --tar     2025Sep18.tar.gz \
     --work    _crops_train

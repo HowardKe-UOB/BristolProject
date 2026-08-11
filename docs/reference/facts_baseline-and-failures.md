@@ -1,27 +1,27 @@
 # baseline-and-failures
 
-## Baseline architecture (0.503 system)  [vitb_unsup.py:36,190-193; cowreid/encoder.py:37-49,55-70; cowreid/iics.py:34-79; train_finetune_iics.py:35-53]
+## Baseline architecture (0.503 system)  [vitb_unsup.py:36,190-193; lib/cowreid/encoder.py:37-49,55-70; lib/cowreid/iics.py:34-79; train_finetune_iics.py:35-53]
 vitb_unsup.py trains FineTuneIICS: a timm DINOv2 ViT-B/14 backbone ('vit_base_patch14_dinov2.lvd142m', num_classes=0, so the per-frame feature is the 768-d final-norm CLS token) at 518x518 input, with only the last 4 transformer blocks + final LayerNorm trainable (all other params frozen but still in the graph). Per-clip embedding: frames (B,T,3,518,518) -> per-frame 768-d features -> learned temporal attention pool (Linear(768,1), softmax over T, weighted sum) -> Linear(768,256) -> AIBN1d(256) (learnable-alpha mix of BatchNorm1d(affine=False) and per-sample instance standardisation, then gamma/beta) -> ReLU -> L2-normalise. One bias-free cosine classifier per camera: logits = 16 * cos(embedding, normalised weight rows).
 
 ## Training protocol: strictly alternating intra/inter steps  [vitb_unsup.py:40,135-140,173,214-256]
 Leave-one-camera-out: holdout camera '66.130' is excluded from training. The step loop alternates deterministically: EVEN steps = intra-camera cross-entropy (pick one random camera, sample P=10 intra-camera pseudo-labels x K=4 tracklets each with replacement if needed, T=2 randomly sampled frames per tracklet, loss = CE(16*cos logits of that camera's branch, pseudo-label)); ODD steps = inter-camera multi-task SSL objective on a batch of P=10 inter-clusters x K=4 tracklets. Default --target 1000 steps total (i.e. ~500 CE + ~500 SSL steps). fp16 autocast + GradScaler throughout; no LR schedule.
 
-## Intra-camera pseudo-labels are STATIC and come from a frozen ViT-S cache  [vitb_unsup.py:169-188; cowreid/cluster.py:46-94]
+## Intra-camera pseudo-labels are STATIC and come from a frozen ViT-S cache  [vitb_unsup.py:169-188; lib/cowreid/cluster.py:46-94]
 Intra-camera pseudo-labels are computed ONCE at process start, per camera, from a pre-existing frozen DINOv2 ViT-S feature cache (dino_clip_feats_v1.npz, arg --vits-cache): each tracklet is represented by the L2-normalised mean of its cached per-frame features (frozen_mean), then ClusterAssigner(sim_threshold=0.7, k=10) clusters via mutual-kNN edges (cos >= 0.7, both in each other's top-10) merged greedily by descending similarity through a constrained union-find that refuses to merge same-camera cannot-link pairs. The resulting per-camera cluster counts fix the classifier branch sizes. These intra labels are never refreshed during training.
 
-## Inter-camera pseudo-labels: CA-Jaccard DBSCAN, refreshed every 250 steps  [vitb_unsup.py:137,143,208-225; cowreid/cajaccard.py:20-90]
+## Inter-camera pseudo-labels: CA-Jaccard DBSCAN, refreshed every 250 steps  [vitb_unsup.py:137,143,208-225; lib/cowreid/cajaccard.py:20-90]
 Inter-camera clusters come from DBSCAN(eps=0.5 [this script's default; train_finetune_iics.py defaults to 0.6], min_samples=2, metric='precomputed') on a camera-aware Jaccard (CA-Jaccard, Chen et al. CVPR 2024) distance: k-reciprocal neighbours (k1=20) with half-k1 local expansion (accept if |intersection| > 2/3 of candidate set), PLUS forced inclusion of the k1/2=10 nearest inter-camera samples per anchor; neighbour weights w = exp(-d_cos) normalised to sum 1; local query expansion averaging over k2=6 nearest rows; Jaccard distance J_ij = 1 - sum_k min(V_i,V_j)/sum_k max(V_i,V_j), symmetrised. Topology cannot-link pairs are set to distance 1.0 before DBSCAN. DBSCAN noise points (-1) are relabelled as their own SINGLETON clusters (not ignored). Refresh happens whenever step % 250 == 0 (including step 0 of a fresh run, using the current model's embeddings with T=2 uniformly-spaced frames), i.e. the initial frozen-feature clustering at startup only sizes the memory and is immediately replaced.
 
-## Cross-view must-link mining: crop-level dustbin-OT with vote aggregation  [vitb_unsup.py:133,164-165,219-222; cowreid/crossview_ot.py:21-87; cowreid/sinkhorn.py:12-89; train_finetune_iics.py:93-122]
+## Cross-view must-link mining: crop-level dustbin-OT with vote aggregation  [vitb_unsup.py:133,164-165,219-222; lib/cowreid/crossview_ot.py:21-87; lib/cowreid/sinkhorn.py:12-89; train_finetune_iics.py:93-122]
 At every refresh, single crops (T=1 clips) from <=2000 'bags' (each bag = one co-occurring timestamp on one overlapping camera pair among training cameras) are embedded with the current model and L2-normalised; per bag, cost = 1 - cos is matched by log-domain Sinkhorn (eps=0.1, 200 iters) augmented with a dustbin row/column at cost = median (0.5-quantile) of real costs, dustbin marginals m and n. A crop pair (i,j) is accepted only if row i puts more mass on j than on the dustbin AND i is column j's best real row; confidence = P_ij / row-mass. Accepted matches with conf >= 0.5 vote for the pair of parent tracklets; tracklet pairs with >= 3 votes become must-links, which are union-find-merged into the DBSCAN inter labels (merge_labels). GT labels are passed to the miner ONLY to print link precision; they do not gate any link.
 
-## Inter-step loss: exact multi-task objective  [train_phase2_run.py:77-88; train_phase2.py:33-45; cowreid/losses.py:28-199; vitb_unsup.py:249-254]
+## Inter-step loss: exact multi-task objective  [train_phase2_run.py:77-88; train_phase2.py:33-45; lib/cowreid/losses.py:28-199; vitb_unsup.py:249-254]
 make_masks builds: labs_i = inter-cluster label of tracklet i (or -1 if absent); pos_ij = (labs_i == labs_j) and labs_j >= 0; hard_ij = True iff {tid_i,tid_j} is a topology cannot-link pair (the SAME pairs also form cannot_link_pairs). Total loss L = 1.0*L_con + 1.0*L_clu + 0.5*L_cl. L_con (NegativeAwareContrastiveLoss, tau=0.07) on L2-normalised z: per anchor i with positive set P(i) (pos & not diagonal) and negative set N(i) (everything else off-diagonal; forbid mask defaults to zeros since vitb_unsup.py never passes forbid_negative_mask): L_i = -(1/|P(i)|) * sum_{p in P(i)} [ s_ip/tau - log( sum_{j in P(i) union N(i)} w_ij * exp(s_ij/tau) ) ], with w_ij = 2.0 for hard negatives (in-batch cannot-link pairs) and 1.0 otherwise; anchors with no positives are dropped; mean over remaining anchors. L_clu (ClusterContrastLoss/ClusterNCE, tau=0.05): logits = normalize(z) @ centroids^T / 0.05, F.cross_entropy at pseudo-label (ignore_index=-1); after computing the loss the memory is momentum-updated per sample: c_y <- normalize(0.2*c_y + 0.8*z_detached) — momentum m=0.2 weights the OLD centroid, so each new sample contributes 0.8. L_cl (CannotLinkLoss, margin=0.0): mean over in-batch cannot-link index pairs of ReLU(cos(z_a, z_b) - 0).
 
-## Cluster memory is zero-initialised at every refresh  [cowreid/losses.py:94-105; vitb_unsup.py:210,223]
+## Cluster memory is zero-initialised at every refresh  [lib/cowreid/losses.py:94-105; vitb_unsup.py:210,223]
 mem.reset(K) sets centroids = torch.zeros(K, 256); init_centroids() exists but is NEVER called in vitb_unsup.py. So immediately after every 250-step refresh (and at every process resume) all ClusterNCE logits are 0 and the cluster loss starts at log(K); centroids are populated only gradually by the per-sample momentum updates during subsequent odd steps.
 
-## Cannot-link constraint set and camera topology (GT oracle)  [vitb_unsup.py:153-154; cowreid/cluster.py:21-43; cowreid/topology.py:32-63; cowreid/crossview_ot.py:26]
+## Cannot-link constraint set and camera topology (GT oracle)  [vitb_unsup.py:153-154; lib/cowreid/cluster.py:21-43; lib/cowreid/topology.py:32-63; lib/cowreid/crossview_ot.py:26]
 build_cannot_link(tracklets, topo, 0.02) marks a tracklet pair cannot-link iff the two tracklets overlap in time AND (same camera OR their camera pair's overlap weight < 0.02). The topology itself is CameraTopology.from_gt(manifest): an ORACLE that sets each camera-pair weight to the fraction of co-occurring cross-camera crop pairs sharing a GT identity; overlapping_pairs(0.02) from the same object also defines which camera pairs are eligible for crop-OT mining bags. So GT identity labels enter the 'unsupervised' baseline indirectly through the camera-overlap topology (and through logged link precision).
 
 ## uint8 image cache (CACHE_NPY / CacheLoader)  [vitb_unsup.py:41,54-99,162-167]
@@ -41,26 +41,26 @@ Deployment-mode student (all 7 cameras trained, links mined across all pairs —
 
 ## HYPERPARAMS
 - backbone / input size = vit_base_patch14_dinov2.lvd142m, 518x518   (vitb_unsup.py:36,41)
-- unfrozen blocks (--n-blocks) = 4 (last 4 ViT blocks + final norm)   (vitb_unsup.py:142,192; cowreid/encoder.py:37-49)
+- unfrozen blocks (--n-blocks) = 4 (last 4 ViT blocks + final norm)   (vitb_unsup.py:142,192; lib/cowreid/encoder.py:37-49)
 - projection dim (--proj-dim) = 256   (vitb_unsup.py:141)
 - P x K x T (batch) = P=10 clusters, K=4 tracklets, T=2 frames (batch = 40 clips, 80 frames)   (vitb_unsup.py:138-140)
 - frames cached/eval (--frames) = 8 per tracklet   (vitb_unsup.py:132,268)
 - target steps / wall / refresh = --target 1000, --wall 480 s per chunk, --refresh-every 250   (vitb_unsup.py:135-137)
 - optimizer = AdamW; backbone lr 1e-5, head lr 3e-4, weight_decay 1e-4; fp16 GradScaler; no schedule   (vitb_unsup.py:194-197)
-- DBSCAN eps (--eps) = 0.5 on CA-Jaccard distance (min_samples=2)   (vitb_unsup.py:143; cowreid/cajaccard.py:68-69)
-- CA-Jaccard k1 / k2 = k1=20, k2=6, camera_aware=True, lambda=0   (cowreid/cajaccard.py:27-28,68-70)
+- DBSCAN eps (--eps) = 0.5 on CA-Jaccard distance (min_samples=2)   (vitb_unsup.py:143; lib/cowreid/cajaccard.py:68-69)
+- CA-Jaccard k1 / k2 = k1=20, k2=6, camera_aware=True, lambda=0   (lib/cowreid/cajaccard.py:27-28,68-70)
 - intra ClusterAssigner = sim_threshold=0.7, k=10 mutual-kNN   (vitb_unsup.py:184)
 - cannot-link overlap threshold = 0.02 (camera-pair GT co-occurrence weight)   (vitb_unsup.py:154)
-- crop-OT mining = max_bags=2000, Sinkhorn eps=0.1, dustbin cost = median of costs, min_conf=0.5, min_votes=3   (vitb_unsup.py:133,221; cowreid/crossview_ot.py:62; cowreid/sinkhorn.py:48-51)
+- crop-OT mining = max_bags=2000, Sinkhorn eps=0.1, dustbin cost = median of costs, min_conf=0.5, min_votes=3   (vitb_unsup.py:133,221; lib/cowreid/crossview_ot.py:62; lib/cowreid/sinkhorn.py:48-51)
 - loss weights = w_contrastive=1.0, w_cluster=1.0, w_cannotlink=0.5, hard_negative_weight=2.0   (train_phase2.py:33-44)
-- temperatures = InfoNCE tau=0.07; ClusterNCE tau=0.05; cosine-classifier scale=16   (train_phase2.py:33-35; cowreid/iics.py:73)
-- cluster-memory momentum = 0.2 on the OLD centroid: c <- normalize(0.2*c + 0.8*feat)   (train_phase2.py:34; cowreid/losses.py:113-114)
-- CannotLink hinge margin = 0.0 (penalise any positive cosine)   (train_phase2.py:42; cowreid/losses.py:145)
+- temperatures = InfoNCE tau=0.07; ClusterNCE tau=0.05; cosine-classifier scale=16   (train_phase2.py:33-35; lib/cowreid/iics.py:73)
+- cluster-memory momentum = 0.2 on the OLD centroid: c <- normalize(0.2*c + 0.8*feat)   (train_phase2.py:34; lib/cowreid/losses.py:113-114)
+- CannotLink hinge margin = 0.0 (penalise any positive cosine)   (train_phase2.py:42; lib/cowreid/losses.py:145)
 - holdout camera / seed = HOLD='66.130'; --seed 0   (vitb_unsup.py:40,145)
 - tracklet building = max_gap_s=2   (vitb_unsup.py:151)
 
 ## GOTCHAS
-- 'Unsupervised' has two asterisks: (1) the camera-overlap topology is a GT oracle — CameraTopology.from_gt computes camera-pair weights as the fraction of co-occurring cross-camera crops sharing a GT identity (cowreid/topology.py:47-63), and this topology drives both the cannot-link set and which camera pairs get mining bags; (2) GT labels are passed into the miners, but only to print link precision, never to filter links.
+- 'Unsupervised' has two asterisks: (1) the camera-overlap topology is a GT oracle — CameraTopology.from_gt computes camera-pair weights as the fraction of co-occurring cross-camera crops sharing a GT identity (lib/cowreid/topology.py:47-63), and this topology drives both the cannot-link set and which camera pairs get mining bags; (2) GT labels are passed into the miners, but only to print link precision, never to filter links.
 - This is NOT vanilla Cluster-Contrast: the ClusterNCE memory term is one of THREE inter-camera losses (plus SupCon-style InfoNCE with 2x-weighted hard negatives and a cosine hinge cannot-link penalty), and it alternates step-by-step with an IICS-style per-camera cosine-classifier CE — half of all gradient steps are intra-camera CE.
 - Cluster-memory 'momentum 0.2' weights the OLD centroid (new feature gets 0.8) — the opposite of the usual convention where momentum ~0.9 preserves the old value; and centroids are ZERO-initialised at every refresh/resume (init_centroids is never called), so the cluster loss restarts from uniform logits each refresh.
 - Intra-camera pseudo-labels are frozen for the whole run and are derived from a DIFFERENT model: a cached frozen DINOv2 ViT-S feature bank (dino_clip_feats_v1.npz), not the ViT-B being trained; only the inter-camera labels are refreshed with the live model.

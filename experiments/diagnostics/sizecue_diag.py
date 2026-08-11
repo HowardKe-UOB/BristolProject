@@ -18,9 +18,9 @@ Steps:
 from __future__ import annotations
 
 import sys as _sys, pathlib as _pathlib  # path bootstrap: keep bare-name imports working after the re-layout
-_R = next(p for p in _pathlib.Path(__file__).resolve().parents if (p / "cowreid").is_dir())
-_sys.path[:0] = [str(_R), str(_R / "repro"), str(_R / "common")] + [
-    str(d) for d in (_R / "experiments").iterdir() if d.is_dir() and not d.name.startswith(("_", "."))]
+_R = next(p for p in _pathlib.Path(__file__).resolve().parents if (p / "lib" / "cowreid").is_dir())
+_sys.path[:0] = [str(_R), str(_R / "repro"), str(_R / "lib")] + ([str(d) for d in
+    (_R / "experiments").iterdir() if d.is_dir() and not d.name.startswith(("_", "."))] if (_R / "experiments").is_dir() else [])
 
 import json
 import os

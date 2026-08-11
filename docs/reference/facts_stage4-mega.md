@@ -12,16 +12,16 @@ The script's default is --P 10; the n_stage=2 student runs (mega2 s60/61/62, meg
 ## Input resolution pipeline  [vitb_unsup_mega.py:36,65-72; vitb_unsup.py:41,69-96]
 Frames come from a disk uint8 cache of 518x518 crops (IMG=518 in vitb_unsup.py). CacheLoader normalizes on GPU with ImageNet mean/std ([0.485,0.456,0.406]/[0.229,0.224,0.225]). MegaStudent._frames then resizes 518->384 ON THE FLY with F.interpolate(mode='bilinear', align_corners=False) — i.e. resize happens AFTER normalization, inside the forward pass, whenever spatial size != 384. Clips are (B,T,3,518,518) flattened to (B*T,3,H,W) before the backbone, reshaped back to (B,T,1536).
 
-## MegaStudent head (inherited FineTuneIICS -> MultiBranchReID)  [vitb_unsup_mega.py:65-72,176; train_finetune_iics.py:35-53; cowreid/iics.py:34-79; cowreid/encoder.py:55-70]
+## MegaStudent head (inherited FineTuneIICS -> MultiBranchReID)  [vitb_unsup_mega.py:65-72,176; train_finetune_iics.py:35-53; lib/cowreid/iics.py:34-79; lib/cowreid/encoder.py:55-70]
 MegaStudent subclasses FineTuneIICS, overriding only _frames (the 384 resize). Head = MultiBranchReID(in_dim=1536, n_classes_per_cam, proj_dim=256): (1) TemporalPool(1536,'attn') pools T frame features: w_t = softmax_t(Linear(1536->1)(f_t)), pooled = sum_t w_t * f_t; (2) projection embed = Linear(1536->256) -> AIBN1d(256) -> ReLU(inplace); (3) model.embed(clips) = F.normalize(embed(pool(frames)), dim=1) — the training embedding is 256-d and L2-normalized. AIBN1d = gamma*(alpha*BN(x) + (1-alpha)*InstanceStd(x)) + beta with alpha a learnable scalar clamped to [0,1], BN affine=False, instance standardisation per-sample across the 256 dims; BN branch is bypassed (bn=x) when batch size is 1.
 
-## Per-camera cosine classifier  [cowreid/iics.py:64-75; vitb_unsup_mega.py:176,215]
+## Per-camera cosine classifier  [lib/cowreid/iics.py:64-75; vitb_unsup_mega.py:176,215]
 One classifier per camera: nn.Linear(256, k_c, bias=False) where k_c = number of intra-camera clusters (or GT ids under --supervised) in camera c. logits(emb, cam) = 16.0 * emb @ normalize(W_cam, dim=1)^T — a cosine classifier with fixed scale s=16. Camera ids are sanitised ('.'->'_') for the ModuleDict keys.
 
-## Algorithmic flow of vitb_unsup_mega.py (Stage-4 student training)  [vitb_unsup_mega.py:98-260; cowreid/cluster.py:46-91; consensus_ens.py:42-55]
+## Algorithmic flow of vitb_unsup_mega.py (Stage-4 student training)  [vitb_unsup_mega.py:98-260; lib/cowreid/cluster.py:46-91; consensus_ens.py:42-55]
 Deployment mode over ALL 7 cameras, 997 tracklets (g_tids = teacher npz ids order). Labels are mined ONCE from the teacher space before training and FROZEN (no refresh loop): (a) intra-camera pseudo-labels per camera via ClusterAssigner(sim_threshold=0.7, k=10).assign on teacher embeddings with same-camera cannot-links (mutual-kNN graph, edges need cosine>=0.7 and mutuality within top-10, constrained union-find); (b) cross-camera proxy links via mutual_knn_links(X_teacher, cams, k=2): S=X@X^T with self and same-camera entries set to -2, links = mutual top-k pairs, per-link confidence = teacher cosine Xn[a]@Xn[b]. Each intra cluster = one proxy; global proxy index = per-camera offset + local label; n_proxy = total. Proxy bank initialised from the STUDENT's own initial embeddings: P0[j] = normalize(mean of embed_tids embeddings of proxy j's member tracklets) — NOT from the teacher. Training alternates two step types for target=1000 steps under a wall clock (--wall 300 s) with checkpoint resume (model+opt+step saved each chunk).
 
-## Loss, even steps (intra-camera CE)  [vitb_unsup_mega.py:204-216; cowreid/iics.py:73-75; vitb_unsup.py:84-92]
+## Loss, even steps (intra-camera CE)  [vitb_unsup_mega.py:204-216; lib/cowreid/iics.py:73-75; vitb_unsup.py:84-92]
 Pick one camera c uniformly at random; sample min(P=10, #clusters) intra clusters without replacement; from each, K=4 tracklets (with replacement if the cluster has <4); T=2 random frames each (frame indices drawn WITH replacement, rng.integers). Loss = CrossEntropy( 16*<e_i, w_hat_y> over camera c's classes , y_i ) where e_i is the 256-d normalized embedding and w_hat the L2-normalized classifier rows. LaTeX: L_intra = -(1/B) sum_i log[ exp(s*cos(e_i,w_{y_i})) / sum_k exp(s*cos(e_i,w_k)) ], s=16, softmax over camera c's k_c classes only.
 
 ## Loss, odd steps (proxy contrastive + confidence-weighted link loss)  [vitb_unsup_mega.py:217-248]
@@ -65,14 +65,14 @@ Training runs in wall-clock chunks: loop `while step < target and (time-t0) < wa
 - --K (tracklets per cluster/proxy) = 4   (vitb_unsup_mega.py:82)
 - --T (frames per tracklet per batch) = 2   (vitb_unsup_mega.py:83)
 - --frames (cached frames per tracklet) = 8   (vitb_unsup_mega.py:78)
-- --proj-dim (student embedding dim) = 256 (L2-normalized; Linear 1536->256 + AIBN1d + ReLU after attention temporal pool)   (vitb_unsup_mega.py:84,176; cowreid/iics.py:61-71)
-- Cosine-classifier scale s = 16.0   (cowreid/iics.py:73-75)
+- --proj-dim (student embedding dim) = 256 (L2-normalized; Linear 1536->256 + AIBN1d + ReLU after attention temporal pool)   (vitb_unsup_mega.py:84,176; lib/cowreid/iics.py:61-71)
+- Cosine-classifier scale s = 16.0   (lib/cowreid/iics.py:73-75)
 - --temp (proxy softmax temperature tau) = 0.07   (vitb_unsup_mega.py:88,231)
 - --momentum (proxy bank) = 0.2 = weight on OLD proxy; update p <- normalize(0.2*p + 0.8*f)   (vitb_unsup_mega.py:89,249-252)
 - --w-link (link-loss weight) = 1.0   (vitb_unsup_mega.py:87,246)
 - --link-k (mutual-kNN link k) = 2   (vitb_unsup_mega.py:86,155)
 - Linked proxies per odd step = min(P//2, |linked_pool|) = 5 linked + (P-5) random proxies   (vitb_unsup_mega.py:218-221)
-- Intra-camera ClusterAssigner = sim_threshold=0.7, k=10 (mutual-kNN + constrained union-find, same-camera cannot-links)   (vitb_unsup_mega.py:133; cowreid/cluster.py:46-91)
+- Intra-camera ClusterAssigner = sim_threshold=0.7, k=10 (mutual-kNN + constrained union-find, same-camera cannot-links)   (vitb_unsup_mega.py:133; lib/cowreid/cluster.py:46-91)
 - Cannot-link overlap threshold = 0.02 (build_cannot_link(tracklets, topo, 0.02)); tracklet max_gap_s=2   (vitb_unsup_mega.py:99,102)
 - Optimizer = AdamW: backbone lr 1e-5, head lr 3e-4, weight_decay 1e-4 (both groups); AMP fp16 + GradScaler   (vitb_unsup_mega.py:177-180)
 - --target / --wall = 1000 steps / 300 s wall per chunk (checkpoint-resume chunking)   (vitb_unsup_mega.py:79-80,203)

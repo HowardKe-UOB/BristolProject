@@ -200,7 +200,7 @@
 
 - **制胜方法 / winning method:** `vitb_unsup_cap.py`(CAP),`eval_cap_ensemble.py` / `cap_ens_curve.py`(集成与曲线),`make_distill_labels.py` / `distill_diag.py`(教师标签诊断),`vitb_unsup_distill.py`(学生),`fuse_student.py` / `students_only2.py`(融合)
 - **协议验证 / validation:** `validate_protocols.py`,`validate_supervised.py`,`vitb_unsup_deploy.py` + `validate_deploy.py`
-- **检索期杠杆 / inference levers:** `new_levers*.py`,`vitb_tta.py`,`cowreid/st_inference.py`
+- **检索期杠杆 / inference levers:** `new_levers*.py`,`vitb_tta.py`,`lib/cowreid/st_inference.py`
 - **负面结果 / negatives:** `vitb_unsup_gembn.py`,`vitb_unsup_boot.py`,`vitb_unsup_strict.py` + `strict_mine_diag.py`,`part_match.py`,`consensus_ens.py`
 - **图表 / figures:** `make_figures_en.py`(结果图,英文学术版),`make_methods_figs_en.py`(方法总览与机制示意图),`make_figures.py`(双语版)
 - **结果存档 / archives:** `artifacts2/*.json`;嵌入缓存 `_vitb_*_emb_*.npz`;checkpoint `_vitb_cap_s{0..4}_ckpt.pt`,`_vitb_dst_s{5..9}_ckpt.pt`,`_vitb_dep_s{10..12}_ckpt.pt`

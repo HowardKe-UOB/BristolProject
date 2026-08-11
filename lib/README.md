@@ -1,8 +1,8 @@
-# Shared script-level infrastructure
+# lib - the library
 
-Modules imported by the pipeline and by the experiments: the image cache and unsupervised trainer core, the IICS fine-tuning stack, the label-free inference levers, the pseudo-label quality diagnostic, and the spatio-temporal evaluation helpers. Several also have a CLI, but their main role is to be imported.
+Everything the pipeline imports lives here. The `cowreid` package holds the foundation (manifest/tracklets/topology, pair mining + OT + constrained clustering, encoder/losses/batching, splits/eval/ST-mask - it carries its own READMEs); the flat modules below are the shared runtime layer: the image cache and unsupervised trainer core, the IICS fine-tuning stack, the label-free inference levers, the pseudo-label quality diagnostic, and the spatio-temporal evaluation helpers. Several also have a CLI, but their main role is to be imported.
 
-Run everything from the repository root, e.g. `python common\consensus_ens.py`.
+Run everything from the repository root, e.g. `python lib\consensus_ens.py`.
 
 | Script | What it answers | Result archived as |
 |---|---|---|

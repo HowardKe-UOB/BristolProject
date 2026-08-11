@@ -13,7 +13,7 @@ Two prerequisites are built once before Stage 1 and are not optional: the traine
 image cache and load the frozen ViT-S cache unconditionally, so a fresh clone must create both.
 
 ```
-python common/vitb_unsup.py --build-cache --tar 2025Sep18.tar.gz   # 15 GB, CPU, ~1 h
+python lib/vitb_unsup.py --build-cache --tar 2025Sep18.tar.gz   # 15 GB, CPU, ~1 h
 python repro/make_vits_cache.py                                    # 9 MB, GPU, ~15 min
 ```
 

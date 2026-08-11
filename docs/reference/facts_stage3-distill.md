@@ -1,9 +1,9 @@
 # stage3-distill
 
-## Stage 3 student initialization  [vitb_unsup_distill.py:132-134; cowreid/encoder.py:37-48; train_finetune_iics.py:35-47; cowreid/iics.py:54-75]
+## Stage 3 student initialization  [vitb_unsup_distill.py:132-134; lib/cowreid/encoder.py:37-48; train_finetune_iics.py:35-47; lib/cowreid/iics.py:54-75]
 The student is NOT resumed from any earlier SSL checkpoint. It is built fresh each run: DinoV2Backbone(model_name='vit_base_patch14_dinov2.lvd142m', pretrained=True) with ALL parameters frozen, then unfreeze_last(4) re-enables gradients for only the last 4 transformer blocks plus the final LayerNorm (lower blocks stay frozen but still run in the forward graph). On top sits a randomly-initialized FineTuneIICS head = MultiBranchReID(in_dim=768, n_classes_per_cam, proj_dim=256): temporal attention pooling (TemporalPool 'attn', a Linear(768,1) scorer) over T frame features, then Linear(768->256) -> AIBN1d(256) -> ReLU, output L2-normalized (F.normalize dim=1), plus one bias-free cosine classifier nn.Linear(256, k_c, bias=False) per camera. So 'from scratch' means 'pretrained DINOv2 backbone + fresh head', not random weights and not a Stage-2 checkpoint.
 
-## Frozen teacher label inputs (distill/holdout variant)  [vitb_unsup_distill.py:42,77-105 (docstring lines 1-20); cowreid/cluster.py:46-78]
+## Frozen teacher label inputs (distill/holdout variant)  [vitb_unsup_distill.py:42,77-105 (docstring lines 1-20); lib/cowreid/cluster.py:46-78]
 Consumes _vitb_cap_ens5_emb_v1.npz (constant ENS_NPZ). Fields: 'ids' (tracklet-id list) and one (N,D) embedding matrix per seed (every key except 'ids'; 5 seeds per the docstring). Teacher space X_ens = mean over the 5 seed matrices, then row-wise L2 normalization. From this frozen space, computed ONCE at script start (recomputed deterministically on every resume, never refreshed during training): (a) per-camera intra-camera clusters via ClusterAssigner(sim_threshold=0.7, k=10).assign on the teacher embeddings of that camera's tracklets, constrained by same-camera cannot-links; each cluster becomes one proxy with a global index (offset per camera); (b) cross-camera tracklet links via mutual_knn_links(X, cams, k=1). Docstring quantifies: 0.879 intra-cluster pairwise precision, 103 mutual-NN k=1 links at ~60% precision.
 
 ## Cross-camera link mining algorithm (mutual_knn_links)  [consensus_ens.py:42-55; vitb_unsup_distill.py:105-114]
@@ -18,10 +18,10 @@ Proxy bank initialized from STUDENT embeddings (not teacher): E0 = embed_tids(..
 ## Linked-proxy oversampling in the batch sampler  [vitb_unsup_distill.py:183-193]
 Odd (proxy) steps build the batch from P=12 proxies: n_link = min(P//2, |linked_pool|) = up to 6 proxies drawn WITHOUT replacement from linked_pool (the sorted set of proxies that appear in plinks), and the remaining P - n_link drawn without replacement from ALL n_proxy proxies via rng.choice(n_proxy, ...) — the second draw can duplicate an already-chosen linked proxy (no dedup between the two draws). For each chosen proxy, K=4 member tracklets are sampled (with replacement iff the cluster has fewer than 4 members), giving a batch of 48 tracklet clips, each of T=2 randomly-sampled frames (i.i.d. with replacement from 8 pre-cached frame paths per tracklet). Comment in code: 'half the sampled proxies come from the linked pool so links fire'.
 
-## Intra-camera CE branch (kept, alternating)  [vitb_unsup_distill.py:168-182; cowreid/iics.py:73-75]
+## Intra-camera CE branch (kept, alternating)  [vitb_unsup_distill.py:168-182; lib/cowreid/iics.py:73-75]
 Yes, kept. On EVEN steps: pick one camera uniformly at random; sample up to P=12 of its fixed intra-camera clusters without replacement; K=4 tracklets per cluster (with replacement if needed); loss = standard nn.CrossEntropyLoss on that camera's cosine classifier logits: logits = 16 * <z, W_norm> where W rows are L2-normalized at use (scale=16 fixed) and targets are the fixed local cluster labels. This is a separate full backward+optimizer step — even and odd branches are never mixed in one batch. So the model effectively carries two different temperatures: scale 16 in the CE branch vs 1/0.07 ~= 14.29 in the proxy/link branch.
 
-## Cannot-link handling  [vitb_unsup_distill.py:69,87,95; cowreid/cluster.py:21-43,73-78]
+## Cannot-link handling  [vitb_unsup_distill.py:69,87,95; lib/cowreid/cluster.py:21-43,73-78]
 Cannot-links come from build_cannot_link(tracklets, topo, 0.02): pairs that overlap in time AND are either (1) in the same camera, or (2) in a non-overlapping camera pair (spatial-overlap fraction below threshold 0.02 -> different physical locations). In Stage 3 the set is FILTERED to same-camera pairs only (cl_same = {p in cl : both tracklets share a camera}) and used SOLELY as union-find merge constraints inside ClusterAssigner during the one-time intra-camera clustering. There is NO cannot-link term in any training loss, and cross-camera cannot-links are discarded entirely in this stage.
 
 ## Training schedule, optimizer, precision  [vitb_unsup_distill.py:49-50,135-151,167-168,219-226]
@@ -44,7 +44,7 @@ Manifest from listing '2025Sep18.listing.txt'; tracklets built with max_gap_s=2;
 - --T (frames per tracklet clip) = 2   (vitb_unsup_distill.py:53)
 - --frames (cached frames per tracklet to sample from) = 8   (vitb_unsup_distill.py:48)
 - --proj-dim (embedding dimension) = 256   (vitb_unsup_distill.py:54)
-- --n-blocks (unfrozen final ViT blocks) = 4 (plus final LayerNorm)   (vitb_unsup_distill.py:55; cowreid/encoder.py:37-48)
+- --n-blocks (unfrozen final ViT blocks) = 4 (plus final LayerNorm)   (vitb_unsup_distill.py:55; lib/cowreid/encoder.py:37-48)
 - --link-k (mutual-kNN k for cross-camera links) = 1 (distill/holdout) vs 2 (deploy)   (vitb_unsup_distill.py:56; vitb_unsup_deploy.py:52)
 - --w-link (link-loss weight) = 1.0   (vitb_unsup_distill.py:57)
 - --temp (proxy softmax temperature tau) = 0.07   (vitb_unsup_distill.py:58)
@@ -53,14 +53,14 @@ Manifest from listing '2025Sep18.listing.txt'; tracklets built with max_gap_s=2;
 - backbone learning rate = 1e-5 (AdamW)   (vitb_unsup_distill.py:136)
 - head learning rate = 3e-4 (AdamW)   (vitb_unsup_distill.py:137)
 - weight decay = 1e-4 (both param groups)   (vitb_unsup_distill.py:137)
-- intra-camera clustering: ClusterAssigner(sim_threshold, k) = sim_threshold=0.7, k=10 (mutual-kNN + constrained union-find; min_cluster_size default 1)   (vitb_unsup_distill.py:95; cowreid/cluster.py:49-53)
-- cannot-link camera-overlap threshold = 0.02   (vitb_unsup_distill.py:69; cowreid/cluster.py:21-22)
-- cosine-classifier logit scale (intra CE branch) = 16.0 (fixed)   (cowreid/iics.py:73-75)
+- intra-camera clustering: ClusterAssigner(sim_threshold, k) = sim_threshold=0.7, k=10 (mutual-kNN + constrained union-find; min_cluster_size default 1)   (vitb_unsup_distill.py:95; lib/cowreid/cluster.py:49-53)
+- cannot-link camera-overlap threshold = 0.02   (vitb_unsup_distill.py:69; lib/cowreid/cluster.py:21-22)
+- cosine-classifier logit scale (intra CE branch) = 16.0 (fixed)   (lib/cowreid/iics.py:73-75)
 - tracklet building max gap = max_gap_s=2   (vitb_unsup_distill.py:66)
 - linked-pool oversampling quota per odd batch = n_link = min(P//2, |linked_pool|) = up to 6 of 12 proxies   (vitb_unsup_distill.py:185-188)
 - teacher npz (distill) = _vitb_cap_ens5_emb_v1.npz (mean of 5 seed matrices, L2-normalized)   (vitb_unsup_distill.py:42,77-81)
 - teacher npz (deploy) = _vitb_dst_emb_v4.npz, keys containing s7/s8/s9 or key=='t0', averaged and L2-normalized   (vitb_unsup_deploy.py:38,58,75-79)
-- backbone model = vit_base_patch14_dinov2.lvd142m (timm, pretrained=True, num_classes=0)   (vitb_unsup.py:36; cowreid/encoder.py:23)
+- backbone model = vit_base_patch14_dinov2.lvd142m (timm, pretrained=True, num_classes=0)   (vitb_unsup.py:36; lib/cowreid/encoder.py:23)
 - holdout camera (distill only) = HOLD = '66.130'   (vitb_unsup.py:40; vitb_unsup_distill.py:83)
 
 ## GOTCHAS

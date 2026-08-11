@@ -1,6 +1,6 @@
 # teacher-mining
 
-## Per-seed teacher embedding with flip-TTA  [eval_cap_ensemble.py:30-49,86-91; cowreid/iics.py:57-71]
+## Per-seed teacher embedding with flip-TTA  [eval_cap_ensemble.py:30-49,86-91; lib/cowreid/iics.py:57-71]
 Five CAP seed checkpoints (tags s0..s4, files _vitb_cap_s0_ckpt.pt .. _vitb_cap_s4_ckpt.pt) each embed every eval tracklet. Per tracklet: an 8-frame clip (T=8, batch size 8) is passed through the frozen-architecture FineTuneIICS model under fp16 autocast; the embedding taken is model.head.pool(model._frames(x)), i.e. the attention TemporalPool over per-frame DINOv2 ViT-B backbone features (768-d), F.normalize'd. TTA: the same clip is also embedded horizontally flipped (torch.flip(x, dims=[-1])); each view's vector is L2-normalized and summed, then the sum is L2-normalized again: e = normalize( normalize(e_plain) + normalize(e_flip) ). All five per-seed embedding matrices plus the tracklet id list are saved to _vitb_cap_ens5_emb_v1.npz (keys: ids, s0..s4).
 
 ## Champion per-seed distance recipe  [eval_cap_ensemble.py:94-100; new_levers.py:53-62,79-87,106-113]
@@ -9,7 +9,7 @@ For each seed, d_champ = RRF_{k=20}( d1, d2, d3 ) with: d1 = cosine distance (1 
 ## RRF formula as implemented  [new_levers.py:116-130; eval_cap_ensemble.py:100]
 Reciprocal-rank fusion of M distance matrices: fused(i,j) = - SUM_{m=1..M} 1/(k + r_m(i,j)), where r_m(i,j) is the 0-BASED rank (0 = closest) of gallery j in query i's ranking under distance m (argsort with stable kind). The negation turns the RRF score into a distance-like quantity. Champion recipe uses k=20; the function's default is k=60.
 
-## CA-Jaccard re-rank distance (d3) internals  [cowreid/cajaccard.py:20-65; new_levers.py:110-113]
+## CA-Jaccard re-rank distance (d3) internals  [lib/cowreid/cajaccard.py:20-65; new_levers.py:110-113]
 ca_jaccard_distance(feat, cameras, k1, k2, camera_aware=True, lambda=0): L2-normalize; original_dist = clip(1 - X X^T, 0, inf). For each i: k-reciprocal set R(i,k1) = {j in top-(k1+1) of i : i in top-(k1+1) of j}; local expansion adds R(j, round(k1/2)) for each j in R(i,k1) if |R(j)∩R(i)| > (2/3)|R(j)|; camera-aware step then adds the max(1, k1//2) nearest INTER-camera neighbours by original cosine distance (for k1=30 that is 15). Membership vector V[i, kr_exp] = exp(-original_dist[i,kr_exp]) / sum (Gaussian weighting). If k2>1, local query expansion: V[i] = mean of V over i's top-k2 initial neighbours. Jaccard distance J(i,j) = 1 - sum(min(V_i,V_j))/sum(max(V_i,V_j)); symmetrized J = 0.5(J + J^T); diagonal zeroed; lambda_value=0 so no blend with original distance. dist_rerank returns the query-vs-gallery block of the (Q+G)x(Q+G) matrix.
 
 ## Seed combination for retrieval evaluation  [eval_cap_ensemble.py:109-120; artifacts2/consensus_ens_v1.json (mean(all 5))]
@@ -18,10 +18,10 @@ Three ensembles are evaluated: (a) 'concat->champion' — per-seed L2-normalized
 ## Teacher space used for label mining is the EMBEDDING MEAN, not the champion distance  [make_distill_labels.py:36-44,54,95]
 make_distill_labels.py loads _vitb_cap_ens5_emb_v1.npz and forms X_ens = L2normalize( mean_{s in {s0..s4}} X_s ) (per-row L2 with +1e-12). BOTH the intra-camera clustering and the cross-camera mutual-kNN mining operate on plain cosine similarity in this mean-embedding space. The champion RRF recipe (CC/PCAW/re-rank) is used only for retrieval evaluation scripts, never for building distillation labels.
 
-## Intra-camera pseudo-clusters algorithm  [make_distill_labels.py:46-61; cowreid/cluster.py:46-98; cowreid/pair_miner.py:330-367; artifacts2/distill_labels_diag_v1.json (intra_only)]
+## Intra-camera pseudo-clusters algorithm  [make_distill_labels.py:46-61; lib/cowreid/cluster.py:46-98; lib/cowreid/pair_miner.py:330-367; artifacts2/distill_labels_diag_v1.json (intra_only)]
 Per camera c (train cameras only, HOLD='66.130' excluded): take that camera's rows of X_ens; ClusterAssigner(sim_threshold=0.7, k=10, min_cluster_size=1).assign(ids, E, cl_same). Inside: re-L2-normalize, sim = E E^T with diagonal set to -1; candidate edges are MUTUAL top-10 kNN pairs (j in knn10(i) AND i in knn10(j)) with cosine sim >= 0.7; edges sorted by DESCENDING similarity; a constrained union-find processes them in that order and REFUSES any union where some pair (x,y) with x in one component and y in the other is in the cannot-link set (checked exhaustively over the smaller component; union by size, path-halving find). min_cluster_size=1 means every tracklet gets a label (singletons kept; no -1 noise labels). Labels are made globally unique by offsetting each camera's labels by the running cluster count. Result: 339 intra-camera clusters over 834 train tracklets; pairwise precision 0.879, recall 0.255, F1 0.396, zero cross-camera pairs.
 
-## Cannot-link construction and its restriction to same-camera pairs  [cowreid/cluster.py:21-43; make_distill_labels.py:33,47,55]
+## Cannot-link construction and its restriction to same-camera pairs  [lib/cowreid/cluster.py:21-43; make_distill_labels.py:33,47,55]
 build_cannot_link(tracklets, topology, overlap_threshold=0.02): a tracklet pair is cannot-link iff their time intervals overlap AND (same camera OR their camera pair is NOT a topology-overlapping pair at threshold 0.02) — 'a cow cannot be in two places at once'. make_distill_labels then filters this to cl_same = pairs whose two tracklets are on the SAME camera, and only cl_same is passed to the intra-camera ClusterAssigner. Cross-camera cannot-links are therefore unused in Stage 2 labels.
 
 ## Cross-camera link mining (mutual-kNN)  [consensus_ens.py:42-55; make_distill_labels.py:94-108]
@@ -50,15 +50,15 @@ pair_metrics(labels, gt, cam_of): over all unordered tracklet pairs, tp/fp count
 - TTA views = 2 (identity + horizontal flip), L2-normalized then summed then re-normalized   (eval_cap_ensemble.py:39-49)
 - frames per tracklet clip (T) = 8   (eval_cap_ensemble.py:87)
 - embedding batch size = 8   (eval_cap_ensemble.py:37)
-- teacher embedding dim = 768 (attention temporal-pooled DINOv2 ViT-B backbone feature; NOT the 256-d projection head)   (eval_cap_ensemble.py:45; cowreid/iics.py:57-71)
+- teacher embedding dim = 768 (attention temporal-pooled DINOv2 ViT-B backbone feature; NOT the 256-d projection head)   (eval_cap_ensemble.py:45; lib/cowreid/iics.py:57-71)
 - RRF k (champion recipe) = 20 (function default is 60)   (eval_cap_ensemble.py:100; new_levers.py:125)
 - PCA-whitening dims = n_dim=256, eps=1e-3, shrink=0.0, fit on gallery only   (eval_cap_ensemble.py:98; new_levers.py:53-62)
 - camera-centering strength = 1.0 (subtract full per-camera mean, computed jointly on query+gallery)   (new_levers.py:79-87; eval_cap_ensemble.py:96)
-- CA-Jaccard re-rank params (champion) = k1=30, k2=6, camera_aware=True, lambda=0 (dist_rerank defaults k1=20, k2=6)   (eval_cap_ensemble.py:100; new_levers.py:110; cowreid/cajaccard.py:27-28)
-- intra-camera cluster sim_threshold = 0.7 cosine   (make_distill_labels.py:55; cowreid/cluster.py:49)
-- intra-camera cluster kNN k = 10 (mutual top-10 within camera)   (make_distill_labels.py:55; cowreid/cluster.py:49)
-- intra-camera min_cluster_size = 1 (singletons kept, no noise label)   (cowreid/cluster.py:50-53)
-- cannot-link overlap_threshold = 0.02   (make_distill_labels.py:33; cowreid/cluster.py:22)
+- CA-Jaccard re-rank params (champion) = k1=30, k2=6, camera_aware=True, lambda=0 (dist_rerank defaults k1=20, k2=6)   (eval_cap_ensemble.py:100; new_levers.py:110; lib/cowreid/cajaccard.py:27-28)
+- intra-camera cluster sim_threshold = 0.7 cosine   (make_distill_labels.py:55; lib/cowreid/cluster.py:49)
+- intra-camera cluster kNN k = 10 (mutual top-10 within camera)   (make_distill_labels.py:55; lib/cowreid/cluster.py:49)
+- intra-camera min_cluster_size = 1 (singletons kept, no noise label)   (lib/cowreid/cluster.py:50-53)
+- cannot-link overlap_threshold = 0.02   (make_distill_labels.py:33; lib/cowreid/cluster.py:22)
 - cross-camera mutual-kNN k (frozen labels) = 1 (k=2 measured but rejected)   (make_distill_labels.py:94,107-110)
 - cross-camera link confidence weight = none — unweighted binary links   (consensus_ens.py:42-55; make_distill_labels.py:110)
 - held-out camera (HOLD) = "66.130"   (make_distill_labels.py:24; new_levers.py:42)

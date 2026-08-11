@@ -150,7 +150,7 @@
 ---
 
 ## 相关文件 / Related Files
-- 主推理杠杆脚本 / Inference-lever scripts: `new_levers.py`, `new_levers2.py`, `st_validate2.py`, `cowreid/st_inference.py`
+- 主推理杠杆脚本 / Inference-lever scripts: `new_levers.py`, `new_levers2.py`, `st_validate2.py`, `lib/cowreid/st_inference.py`
 - 训练期负面结果 / Training-time negatives: `vitb_unsup_gembn.py`（GeM+BNNeck）, `vitb_unsup_boot.py`（CC 自举）
 - 标签效率 / Label efficiency: `label_efficiency.py`
 - 结果存档 / Result JSON: `artifacts2/st_final_comparison_v1.json`, `artifacts2/new_levers2_v1.json`, `artifacts2/gembn_eval_v1.json`, `artifacts2/boot_eval_v1.json`

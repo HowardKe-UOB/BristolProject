@@ -5,7 +5,7 @@ Levers, all label-free and training-free:
             the minimal form of camera-aware distance rectification (UPCA/CMLR
             family). Attacks the oblique-vs-dorsal camera bias directly.
   * AQE  -- alpha-weighted query expansion (standard retrieval trick).
-  * ST   -- spatio-temporal impossibility mask (cowreid/st_inference.py).
+  * ST   -- spatio-temporal impossibility mask (lib/cowreid/st_inference.py).
   * RR   -- CA-Jaccard re-ranking (already in the repo).
 
     python st_validate2.py --listing 2025Sep18.listing.txt
@@ -13,9 +13,9 @@ Levers, all label-free and training-free:
 from __future__ import annotations
 
 import sys as _sys, pathlib as _pathlib  # path bootstrap: keep bare-name imports working after the re-layout
-_R = next(p for p in _pathlib.Path(__file__).resolve().parents if (p / "cowreid").is_dir())
-_sys.path[:0] = [str(_R), str(_R / "repro"), str(_R / "common")] + [
-    str(d) for d in (_R / "experiments").iterdir() if d.is_dir() and not d.name.startswith(("_", "."))]
+_R = next(p for p in _pathlib.Path(__file__).resolve().parents if (p / "lib" / "cowreid").is_dir())
+_sys.path[:0] = [str(_R), str(_R / "repro"), str(_R / "lib")] + ([str(d) for d in
+    (_R / "experiments").iterdir() if d.is_dir() and not d.name.startswith(("_", "."))] if (_R / "experiments").is_dir() else [])
 
 import argparse
 import json
